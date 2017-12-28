@@ -1,0 +1,3 @@
+Spalted Maple Table,maple_table_one.jpg,maple_table_two.jpg,maple_table_three.jpg%
+Cedar Table,cedar_table_one.jpg,cedar_table_two.jpg,cedar_table_three.jpg,cedar_table_four.jpg,cedar_table_five.jpg,cedar_table_six.jpg%
+Bench,bench_one.jpg,bench_two.jpg,bench_three.jpg,bench_four.jpg
