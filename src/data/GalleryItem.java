@@ -1,4 +1,4 @@
-package com.gillccwoodworks;
+package data;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ public class GalleryItem
 	{
 		this.title = title;
 		
-		// make the list a primative array for less overhead
+		// make the list a primitive array for less overhead?
 		images = new String[imageList.size()];
 		images = imageList.toArray(images);
 	}

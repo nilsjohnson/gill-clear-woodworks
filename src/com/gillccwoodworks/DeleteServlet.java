@@ -7,43 +7,32 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * Servlet implementation class Delete
- */
+import data.ImageDAO;
+
+
 @WebServlet("/delete")
-public class Delete extends HttpServlet
+public class DeleteServlet extends HttpServlet
 {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public Delete()
+	public DeleteServlet()
 	{
 		super();
-		// TODO Auto-generated constructor stub
+
 	}
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		// TODO Auto-generated method stub
 		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		response.getWriter().append("Delete Post Request: " + request.getParameter("rowName"));
 		try
 		{
-			ImageDAO imageDAO = new ImageDAO(this.getServletContext());
+			ImageDAO imageDAO = new ImageDAO();
 			
 			
 			if(request.getParameter("rowName") != null)

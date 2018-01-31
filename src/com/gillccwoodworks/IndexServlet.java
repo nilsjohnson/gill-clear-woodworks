@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
  * Servlet implementation class Index
  */
 @WebServlet({"/index", ""})
-public class Index extends HttpServlet
+public class IndexServlet extends HttpServlet
 {
 	private static final long serialVersionUID = 1L;
 	private ServletContext context;
@@ -28,7 +28,7 @@ public class Index extends HttpServlet
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public Index()
+	public IndexServlet()
 	{
 		super();
 		// TODO Auto-generated constructor stub

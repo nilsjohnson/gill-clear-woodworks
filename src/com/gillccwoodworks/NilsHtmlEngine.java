@@ -11,6 +11,10 @@ import java.util.List;
 
 import javax.servlet.ServletContext;
 
+import data.CarouselItem;
+import data.GalleryItem;
+import data.ImageDAO;
+
 public class NilsHtmlEngine
 {
 	private ServletContext context;
@@ -21,7 +25,7 @@ public class NilsHtmlEngine
 		this.context = context;
 		try
 		{
-			imageDAO = new ImageDAO(context);
+			imageDAO = new ImageDAO();
 		}
 		catch (SQLException e)
 		{

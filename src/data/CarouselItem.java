@@ -1,4 +1,4 @@
-package com.gillccwoodworks;
+package data;
 
 public class CarouselItem
 {

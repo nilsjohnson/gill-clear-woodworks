@@ -30,6 +30,9 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
+import data.GalleryItem;
+import data.ImageDAO;
+
 /**
  * Servlet implementation class FileUploadServlet
  */
@@ -59,7 +62,7 @@ public class FileUploadServlet extends HttpServlet
 
 		// instantiate the DAO
 		try {
-			imageDAO = new ImageDAO(this.getServletContext());
+			imageDAO = new ImageDAO();
 		} catch (SQLException e) {
 			response.getWriter().append(e.getMessage());
 			e.printStackTrace();

@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
  * Servlet implementation class Admin
  */
 @WebServlet("/admin")
-public class Admin extends HttpServlet
+public class AdminServlet extends HttpServlet
 {
 	private static final long serialVersionUID = 1L;
 	private NilsHtmlEngine engine;
@@ -27,7 +27,7 @@ public class Admin extends HttpServlet
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public Admin()
+	public AdminServlet()
 	{
 		super();
 		// TODO Auto-generated constructor stub

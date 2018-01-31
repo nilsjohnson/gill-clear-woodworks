@@ -1,4 +1,4 @@
-package com.gillccwoodworks;
+package data;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,22 +10,18 @@ import javax.servlet.ServletContext;
 
 public abstract class DAO
 {
-	public static String url = "jdbc:sqlite:/home/nils/gccwoodworks.db";
+	public static String dbPath = "jdbc:sqlite:/home/nils/gccwoodworks.db";
 	public static Connection connection = null;
 	protected  ServletContext context;
 
-	protected DAO(ServletContext context) throws SQLException
+	protected DAO() throws SQLException
 	{		
-		this.context = context;
-		// load jdbc driver
 		try
 		{
 			Class.forName("org.sqlite.JDBC");
 		}
 		catch (ClassNotFoundException ex)
 		{
-			// TODO Auto-generated catch block
-			System.out.println(ex.getMessage());
 			ex.printStackTrace();
 		}
 		
@@ -39,6 +35,7 @@ public abstract class DAO
 				+ "thumbnail6 varchar(50),"
 				+ "primary key (title)" 
 				+ ");";
+		
 		// TODO img_1? re think this.
 		String createMainSlider = "CREATE TABLE IF NOT EXISTS SliderImages ("
 				+ "slider varchar(50) not null,"
@@ -47,7 +44,7 @@ public abstract class DAO
 				+ ");";
 		
 		
-		try (Connection conn = DriverManager.getConnection(url); Statement stmt = conn.createStatement())
+		try (Connection conn = DriverManager.getConnection(dbPath); Statement stmt = conn.createStatement())
 		{
 			stmt.execute(createGalleries);
 			stmt.execute(createMainSlider);
@@ -83,7 +80,7 @@ public abstract class DAO
 		{
 			if (connection == null || connection.isClosed())
 			{
-				connection = DriverManager.getConnection(url);
+				connection = DriverManager.getConnection(dbPath);
 			}
 		}
 		catch (SQLException e)

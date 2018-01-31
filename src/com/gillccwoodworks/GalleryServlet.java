@@ -10,20 +10,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * Servlet implementation class Gallery
- */
+
 @WebServlet("/gallery")
-public class Gallery extends HttpServlet
+public class GalleryServlet extends HttpServlet
 {
 	private static final long serialVersionUID = 1L;
-	private ServletContext servletContext;
 	private NilsHtmlEngine engine;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public Gallery()
+	public GalleryServlet()
 	{
 		super();
 		// TODO Auto-generated constructor stub
@@ -32,18 +26,10 @@ public class Gallery extends HttpServlet
 	@Override
 	public void init(ServletConfig config) throws ServletException
 	{
-		// TODO Auto-generated method stub
 		super.init(config);
-		servletContext = config.getServletContext();
-		ServletContext context = this.getServletContext();
-		engine = new NilsHtmlEngine(context);
+		engine = new NilsHtmlEngine(this.getServletContext());
 	}
 
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		//generate and display the head
@@ -55,18 +41,10 @@ public class Gallery extends HttpServlet
 		
 		// generate and display the body
 		response.getWriter().append(engine.getGalleryBody());
-		
-		
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		// TODO Auto-generated method stub
-		doGet(request, response);
+		response.sendRedirect("index");
 	}
-
 }

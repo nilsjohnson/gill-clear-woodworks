@@ -1,4 +1,4 @@
-package com.gillccwoodworks;
+package data;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,18 +13,19 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.gillccwoodworks.FileUploadServlet;
 
 
 public class ImageDAO extends DAO
 {
+	public ImageDAO() throws SQLException
+	{
+		super();
+	}
+
 	private final String TABLE_NAME = "Galleries";
 	// todo, define this once, make constants file or somethin' - multiple def!
 	private final String BUCKET_NAME = "forestfriends";
-	
-	protected ImageDAO(ServletContext context) throws SQLException
-	{
-		super(context);
-	}
 	
 	/**
 	 * Inserts a gallery item into the table.
