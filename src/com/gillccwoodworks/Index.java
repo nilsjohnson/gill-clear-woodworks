@@ -18,11 +18,11 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Servlet implementation class Index
  */
-@WebServlet("/index")
+@WebServlet({"/index", ""})
 public class Index extends HttpServlet
 {
 	private static final long serialVersionUID = 1L;
-	private ServletContext servletContext;
+	private ServletContext context;
 	private String rootPath;
 
 	/**
@@ -39,8 +39,8 @@ public class Index extends HttpServlet
 	{
 		// TODO Auto-generated method stub
 		super.init(config);
-		servletContext = config.getServletContext();
-		rootPath = servletContext.getRealPath("/");
+		context = config.getServletContext();
+		rootPath = context.getRealPath("/");
 	}
 
 	/**
@@ -48,10 +48,9 @@ public class Index extends HttpServlet
 	 *      response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-	{		
-		/*response.getWriter().append(NilsHtmlEngine.getHtml(rootPath, "head.txt"));
-		response.getWriter().append(NilsHtmlEngine.getHtml(rootPath, "body.txt"));
-		response.getWriter().append(NilsHtmlEngine.getHtml(rootPath, "footer.txt"));*/
+	{	
+		NilsHtmlEngine engine = new NilsHtmlEngine(context);
+		response.getWriter().append(engine.getHomePage());
 	}
 
 	/**

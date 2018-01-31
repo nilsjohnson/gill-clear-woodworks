@@ -1,1 +1,3 @@
-/build/
+build/
+WebContent/WEB-INF/aws_cred.txt
+WebContent/WEB-INF/lib/
