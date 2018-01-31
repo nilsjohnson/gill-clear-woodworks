@@ -25,7 +25,7 @@ public abstract class DAO
 			ex.printStackTrace();
 		}
 		
-		String createGalleries = "CREATE TABLE IF NOT EXISTS Galleries ("
+		/*String createGalleries = "CREATE TABLE IF NOT EXISTS Galleries ("
 				+ "title varchar(50) not null,"
 				+ "thumbnail1 varchar(50),"
 				+ "thumbnail2 varchar(50),"
@@ -49,7 +49,20 @@ public abstract class DAO
 			stmt.execute(createGalleries);
 			stmt.execute(createMainSlider);
 			//System.out.println(createLeaderBoardTableQuery);
+		}*/
+		
+		String createImagesTable = "CREATE TABLE IF NOT EXISTS Images ("
+				+ "path varchar(50) not null,"
+				+ "gallery varchar(50),"
+				+ "galleryIndex integer not null,"
+				+ "primary key (path)" 
+				+ ");";
+		
+		try (Connection conn = DriverManager.getConnection(dbPath); Statement stmt = conn.createStatement())
+		{
+			stmt.execute(createImagesTable);
 		}
+		
 	}
 	
 	/**

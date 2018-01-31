@@ -12,7 +12,6 @@ public class GalleryItem
 	{
 		this.title = title;
 		
-		// make the list a primitive array for less overhead?
 		images = new String[imageList.size()];
 		images = imageList.toArray(images);
 	}

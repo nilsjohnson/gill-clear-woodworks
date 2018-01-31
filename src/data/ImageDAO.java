@@ -237,8 +237,6 @@ public class ImageDAO extends DAO
 		AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(creds))
 				.withRegion("us-east-1").build();
 
-		
-		
 		try
 		{
 			System.out.println("Image to delete: " + image);
