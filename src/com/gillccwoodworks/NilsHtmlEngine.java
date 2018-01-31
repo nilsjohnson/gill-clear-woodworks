@@ -23,53 +23,60 @@ public class NilsHtmlEngine
 	public NilsHtmlEngine(ServletContext context)
 	{
 		this.context = context;
+
 		try
 		{
 			imageDAO = new ImageDAO();
-		}
-		catch (SQLException e)
+		} catch (SQLException e)
 		{
-			// TODO Auto-generated catch block
+			System.out.println("DAO was not instanciated.");
 			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * Creates a 'gallery'.
+	 * 
+	 * @return html of a gallery.
+	 */
 	public String getGalleryBody()
 	{
 		String galleryBody = new String(getHtmlTemplate("gallery_body.html"));
 		StringBuilder galleryItems = new StringBuilder("");
 
-		ArrayList<GalleryItem> galleriesList = getGalleryList();
+		ArrayList<GalleryItem> galleriesList = imageDAO.getAllGalleries();
 
 		// for each gallery item, generate the html
-		for (GalleryItem item : galleriesList)
+		for (GalleryItem gallery : galleriesList)
 		{
+			// for bootstrap class="col-md-colSize"
+			int colSize = 12 / gallery.getImages().length;
+			// becomes the title
+			String title = gallery.getTitle();
+			// turns the title into id, for swapping thumbnail to main image using javascript
+			String id = title.replaceAll(" ", "_").toLowerCase();
+
 			// template for each gallery item
 			String galleryTemplate = getHtmlTemplate("gallery_item.html");
-
-			int colSize = 12 / item.getImages().length;
-			String title = item.getTitle();
-			String id = title.replace(" ", "_");
-			id = id.toLowerCase();
-
 			// set the title and primary image
-			galleryTemplate = galleryTemplate.replace("TITLE", item.getTitle());
-			galleryTemplate = galleryTemplate.replace("PRIMARY_IMAGE", item.getImages()[0]);
+			galleryTemplate = galleryTemplate.replace("TITLE", gallery.getTitle());
+			galleryTemplate = galleryTemplate.replace("PRIMARY_IMAGE", gallery.getImages()[0]);
 			galleryTemplate = galleryTemplate.replace("ID", id);
 
+			// to be the html for the thumbnails that belong to the gallery
 			StringBuilder thumbnails = new StringBuilder("");
-			// for each image in the item,
-			for (int i = 0; i < item.getImages().length; i++)
+			// for each image in the gallery, make its html and append it to 'thumbnails',
+			for (int i = 0; i < gallery.getImages().length; i++)
 			{
 				// template for each image div
 				String str = getHtmlTemplate("gallery_thumb.html");
 				str = str.replaceAll("ID", id);
 				str = str.replaceAll("COL_SIZE", Integer.toString(colSize));
-				str = str.replaceAll("SOURCE", item.getImages()[i]);
+				str = str.replaceAll("SOURCE", gallery.getImages()[i]);
 				// add this string as a thumbnail image
 				thumbnails.append(str + "\n");
 			}
-			// add to the bigger string
+			// add to the overall template
 			galleryTemplate = galleryTemplate.replace("THUMBNAILS", thumbnails.toString());
 			galleryItems.append(galleryTemplate);
 		}
@@ -79,13 +86,13 @@ public class NilsHtmlEngine
 		return galleryBody.toString();
 	}
 
-	private ArrayList<GalleryItem> getGalleryList()
-	{		
-		ArrayList<GalleryItem> galleryList = imageDAO.getAllGalleries();
-				
-		return galleryList;
-	}
-
+	/**
+	 * makes the general head that this site uses.
+	 * 
+	 * @param title - what goes in the browser's title bar
+	 * @param description - page meta content. SEO buzzwords here. 
+	 * @return
+	 */
 	public String getHead(String title, String description)
 	{
 		String output = getHtmlTemplate("head.html");
@@ -96,11 +103,19 @@ public class NilsHtmlEngine
 		return output;
 	}
 
+	/**
+	 * @return navigation bar for each page. 
+	 */
 	public String getNavbar()
 	{
 		return getHtmlTemplate("navbar.html");
 	}
 
+	/**
+	 * 
+	 * @param fileName - name of the html template file.
+	 * @return string containing the html in that file.
+	 */
 	public String getHtmlTemplate(String fileName)
 	{
 		String output = null;
@@ -119,8 +134,7 @@ public class NilsHtmlEngine
 				line = br.readLine();
 			}
 			output = sb.toString();
-		}
-		catch (Exception e)
+		} catch (Exception e)
 		{
 			e.printStackTrace();
 		}
@@ -128,6 +142,9 @@ public class NilsHtmlEngine
 		return output;
 	}
 
+	/**
+	 * @return the html for FileUploadServlet.java 
+	 */
 	public String getUploadPage()
 	{
 		String output = getHtmlTemplate("image_upload_body.html");
@@ -139,80 +156,89 @@ public class NilsHtmlEngine
 
 		// get the galleries table, generate html table, and put in output
 		galleryItemList = imageDAO.getAllGalleries();
-		
-		for(GalleryItem item: galleryItemList)
+
+		for (GalleryItem item : galleryItemList)
 		{
 			String galleryRowTemplate = getHtmlTemplate("gallery_table_row.html");
 			int numImages = item.getImages().length;
-			
+
 			galleryRowTemplate = galleryRowTemplate.replaceAll("TITLE", item.getTitle());
-			
-			galleryRowTemplate = galleryRowTemplate.replace("IMG_1", (numImages >= 1 ? item.getImages()[0] : noUploadAddress));
-			galleryRowTemplate = galleryRowTemplate.replace("IMG_2", (numImages >= 2 ? item.getImages()[1] : noUploadAddress));
-			galleryRowTemplate = galleryRowTemplate.replace("IMG_3", (numImages >= 3 ? item.getImages()[2] : noUploadAddress));
-			galleryRowTemplate = galleryRowTemplate.replace("IMG_4", (numImages >= 4 ? item.getImages()[3] : noUploadAddress));
-			galleryRowTemplate = galleryRowTemplate.replace("IMG_5", (numImages >= 5 ? item.getImages()[4] : noUploadAddress));
-			galleryRowTemplate = galleryRowTemplate.replace("IMG_6", (numImages == 6 ? item.getImages()[5] : noUploadAddress));
-			
+
+			galleryRowTemplate = galleryRowTemplate.replace("IMG_1",
+					(numImages >= 1 ? item.getImages()[0] : noUploadAddress));
+			galleryRowTemplate = galleryRowTemplate.replace("IMG_2",
+					(numImages >= 2 ? item.getImages()[1] : noUploadAddress));
+			galleryRowTemplate = galleryRowTemplate.replace("IMG_3",
+					(numImages >= 3 ? item.getImages()[2] : noUploadAddress));
+			galleryRowTemplate = galleryRowTemplate.replace("IMG_4",
+					(numImages >= 4 ? item.getImages()[3] : noUploadAddress));
+			galleryRowTemplate = galleryRowTemplate.replace("IMG_5",
+					(numImages >= 5 ? item.getImages()[4] : noUploadAddress));
+			galleryRowTemplate = galleryRowTemplate.replace("IMG_6",
+					(numImages == 6 ? item.getImages()[5] : noUploadAddress));
+
 			galleryTableData.append(galleryRowTemplate + "\n");
 		}
-		
+
 		output = output.replace("CURRENT_GALLERY_IMAGES_TABLE", galleryTableData);
-		
+
 		// get the carosuel table, generate html table and put in output
-		
+
 		CarouselItem[] carouselitems = imageDAO.getAllCarouselImages();
-		
-		for(CarouselItem item : carouselitems)
+
+		for (CarouselItem item : carouselitems)
 		{
 			String carouselRowTemplate = getHtmlTemplate("carousel_image_row.html");
-			
+
 			carouselRowTemplate = carouselRowTemplate.replace("TITLE", item.getCarousel());
 			carouselRowTemplate = carouselRowTemplate.replaceAll("IMG", item.getAddress());
-			
+
 			carouselTableData.append(carouselRowTemplate + "\n");
 		}
-		
+
 		output = output.replace("CAROUSEL_IMAGES_TABLE", carouselTableData);
-		
+
 		return output;
 	}
 
+	/**
+	 * @return the html for the IndexServlet.java
+	 */
 	public String getHomePage()
 	{
 		String output = getHtmlTemplate("index.html");
 		StringBuilder indicatorHtml = new StringBuilder("");
 		StringBuilder imageHtml = new StringBuilder("");
-		
+
 		CarouselItem[] carouselImages = imageDAO.getAllCarouselImages();
-		
-		for(int i = 0; i < carouselImages.length; i++)
+
+		for (int i = 0; i < carouselImages.length; i++)
 		{
 			// get the item
 			CarouselItem item = carouselImages[i];
 			// get the template for the <img src=...> tag
 			String carImgTemplate = getHtmlTemplate("carousel_image.html");
-			// get the template for the carousel indicatior tag 
+			// get the template for the carousel indicatior tag
 			String carIndicatorTag = getHtmlTemplate("carousel_indicator.html");
-			
+
 			carImgTemplate = carImgTemplate.replace("IMG", item.getAddress());
-			if(i > 0)
+			if (i > 0)
 			{
 				carImgTemplate = carImgTemplate.replace("active", "");
 			}
 			imageHtml = imageHtml.append(carImgTemplate + "\n");
-			
+
 			carIndicatorTag = carIndicatorTag.replaceAll("NUM", Integer.toString(i));
-			if(i == 0)
+			if (i == 0)
 			{
 				carIndicatorTag = carIndicatorTag.replace("class=\"\"", "class=\"active\"");
 			}
 			indicatorHtml = indicatorHtml.append(carIndicatorTag + "\n");
 		}
-		
+
 		output = output.replace("INDICATORS", indicatorHtml.toString());
 		output = output.replace("IMAGES", imageHtml.toString());
-		
+
 		return output;
 	}
 }
