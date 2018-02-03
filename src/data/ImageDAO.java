@@ -31,7 +31,7 @@ public class ImageDAO extends DAO
 	 * Inserts a gallery item into the table.
 	 * @param item A gallery item to be displayed on the gallery page.
 	 */
-	public void insertGallery(GalleryItem item)
+	public void insertGallery(ImageGallery item)
 	{
 		String title = item.getTitle();
 		int numImages = item.getImages().length;
@@ -65,9 +65,9 @@ public class ImageDAO extends DAO
 		}
 	}
 	
-	public ArrayList<GalleryItem> getAllGalleries()
+	public ArrayList<ImageGallery> getAllGalleries()
 	{
-		ArrayList<GalleryItem> galleryList = new ArrayList<>();
+		ArrayList<ImageGallery> galleryList = new ArrayList<>();
 		
 		try
 		{
@@ -90,7 +90,7 @@ public class ImageDAO extends DAO
 				addUrlToGalleryList(rSet.getString(6), urlList);
 				addUrlToGalleryList(rSet.getString(7), urlList);
 			
-				GalleryItem item = new GalleryItem(title, urlList);
+				ImageGallery item = new ImageGallery(title, urlList);
 				galleryList.add(item);
 			}
 			

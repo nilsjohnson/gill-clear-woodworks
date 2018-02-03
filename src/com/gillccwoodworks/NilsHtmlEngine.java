@@ -12,7 +12,7 @@ import java.util.List;
 import javax.servlet.ServletContext;
 
 import data.CarouselItem;
-import data.GalleryItem;
+import data.ImageGallery;
 import data.ImageDAO;
 
 public class NilsHtmlEngine
@@ -44,10 +44,10 @@ public class NilsHtmlEngine
 		String galleryBody = new String(getHtmlTemplate("gallery_body.html"));
 		StringBuilder galleryItems = new StringBuilder("");
 
-		ArrayList<GalleryItem> galleriesList = imageDAO.getAllGalleries();
+		ArrayList<ImageGallery> galleriesList = imageDAO.getAllGalleries();
 
 		// for each gallery item, generate the html
-		for (GalleryItem gallery : galleriesList)
+		for (ImageGallery gallery : galleriesList)
 		{
 			// for bootstrap class="col-md-colSize"
 			int colSize = 12 / gallery.getImages().length;
@@ -150,14 +150,14 @@ public class NilsHtmlEngine
 		String output = getHtmlTemplate("image_upload_body.html");
 		StringBuilder galleryTableData = new StringBuilder("");
 		StringBuilder carouselTableData = new StringBuilder("");
-		ArrayList<GalleryItem> galleryItemList = null;
+		ArrayList<ImageGallery> galleryItemList = null;
 
 		String noUploadAddress = "img//no_uploaded.png";
 
 		// get the galleries table, generate html table, and put in output
 		galleryItemList = imageDAO.getAllGalleries();
 
-		for (GalleryItem item : galleryItemList)
+		for (ImageGallery item : galleryItemList)
 		{
 			String galleryRowTemplate = getHtmlTemplate("gallery_table_row.html");
 			int numImages = item.getImages().length;

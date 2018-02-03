@@ -30,7 +30,7 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
-import data.GalleryItem;
+import data.ImageGallery;
 import data.ImageDAO;
 
 /**
@@ -107,7 +107,7 @@ public class FileUploadServlet extends HttpServlet
 		}
 
 		if (!galleryTitle.equals("CAROUSEL_UPLOAD")) {
-			GalleryItem item = new GalleryItem(galleryTitle, urlList);
+			ImageGallery item = new ImageGallery(galleryTitle, urlList);
 			imageDAO.insertGallery(item);
 
 			response.getWriter().append(item.toString());
@@ -120,9 +120,9 @@ public class FileUploadServlet extends HttpServlet
 
 		response.getWriter().append("\n\n-------Testing DB-------\n\n");
 
-		List<GalleryItem> galleryItemList = imageDAO.getAllGalleries();
+		List<ImageGallery> galleryItemList = imageDAO.getAllGalleries();
 
-		for (GalleryItem itemDB : galleryItemList) {
+		for (ImageGallery itemDB : galleryItemList) {
 			response.getWriter().append(itemDB.toString() + "\n\n");
 		}
 

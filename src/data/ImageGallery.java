@@ -2,18 +2,25 @@ package data;
 
 import java.util.List;
 
-public class GalleryItem
+public class ImageGallery
 {
 	private String title;
 	// to hold the address' of images
 	private String[] images;
 	
-	public GalleryItem(String title, List<String> imageList)
+	// TODO get rid of where this is used
+	public ImageGallery(String title, List<String> imageList)
 	{
 		this.title = title;
 		
 		images = new String[imageList.size()];
 		images = imageList.toArray(images);
+	}
+	// this constructor is preferred
+	public ImageGallery(String title, String[] imageList)
+	{
+		this.title = title;
+		images = imageList;
 	}
 	
 	public String getTitle()
