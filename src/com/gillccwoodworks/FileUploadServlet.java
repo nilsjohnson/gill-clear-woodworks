@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -18,6 +19,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
 import com.amazonaws.AmazonClientException;
@@ -47,96 +49,133 @@ public class FileUploadServlet extends HttpServlet
 	public FileUploadServlet()
 	{
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	{
 		response.sendRedirect("gallery");
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	{
 		// to hold the urls of the new images
 		List<String> urlList = new ArrayList<>();
 
 		// instantiate the DAO
-		try {
+		try
+		{
 			imageDAO = new ImageDAO();
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			response.getWriter().append(e.getMessage());
 			e.printStackTrace();
 		}
 
-		response.getWriter().append("Upload processing...\n\n");
-
 		// Retrieves <input type="text" name="description">
 		String galleryTitle = request.getParameter("description");
-
-		response.getWriter().append("This gallery is called " + galleryTitle + "\n\n");
 
 		// Retrieves <input type="file" name="file" multiple="true">
 		List<Part> fileParts = request.getParts().stream().filter(part -> "file".equals(part.getName()))
 				.collect(Collectors.toList());
 
-		for (Part filePart : fileParts) {
-			try {
-				response.getWriter().append("Uploading " + filePart.getSubmittedFileName() + " \n");
+		if (!galleryTitle.equals(Constants.CAROUSEL_TITLE) && fileParts.size() > Constants.MAX_GALLERY_SIZE)
+		{
+			response.getWriter().append("Please Only Upload " + Constants.MAX_GALLERY_SIZE + " Images Per Gallery.");
+		}
+		else
+		{
 
-				// upload
-				upload(filePart);
-				// get the image url
-				// https://s3.amazonaws.com/forestfriends/train2.jpeg
-				String imgUrl = "https://s3.amazonaws.com/" + BUCKET_NAME + "/" + filePart.getSubmittedFileName();
-				// add that to the list to make the gallery item
-				urlList.add(imgUrl);
+			for (Part filePart : fileParts)
+			{
+				try
+				{
+					System.out.println("Uploading: " + filePart.getSubmittedFileName());
+					response.getWriter().append("Uploading " + filePart.getSubmittedFileName() + " \n");
 
-				response.getWriter().append(filePart.getSubmittedFileName() + " uploaded!\n\n");
+					// upload
+					upload(filePart);
+					// get the image url
+					// https://s3.amazonaws.com/forestfriends/train2.jpeg
+					String imgUrl = "https://s3.amazonaws.com/" + BUCKET_NAME + "/" + filePart.getSubmittedFileName();
+					// add that to the list to make the gallery item
+					urlList.add(imgUrl);
 
-			} catch (AmazonServiceException ase) {
-				ase.printStackTrace();
-				// not sure why it has two messages?
-				response.getWriter().append(ase.getErrorMessage());
-				response.getWriter().append(ase.getMessage());
-			} catch (AmazonClientException ace) {
-				ace.printStackTrace();
-				response.getWriter().append(ace.getMessage());
-			} catch (Exception e) {
-				response.getWriter().append("Something really unexpected happened, talk to nils");
+					response.getWriter().append(filePart.getSubmittedFileName() + " uploaded!\n\n");
+
+				}
+				catch (AmazonServiceException ase)
+				{
+					ase.printStackTrace();
+					// not sure why it has two messages?
+					response.getWriter().append(ase.getErrorMessage());
+					response.getWriter().append(ase.getMessage());
+				}
+				catch (AmazonClientException ace)
+				{
+					ace.printStackTrace();
+					response.getWriter().append(ace.getMessage());
+				}
+				catch (Exception e)
+				{
+					response.getWriter().append("Something really unexpected happened, talk to nils");
+				}
 			}
-		}
 
-		if (!galleryTitle.equals("CAROUSEL_UPLOAD")) {
-			ImageGallery item = new ImageGallery(galleryTitle, urlList);
-			imageDAO.insertGallery(item);
+			// if it wasn't flagged as a carousel image upload, make a new gallery
+			if (!galleryTitle.equals(Constants.CAROUSEL_TITLE))
+			{
 
-			response.getWriter().append(item.toString());
-		} else {
-			System.out.println("This is a Front page Slider Image!");
-			for (String url : urlList) {
-				imageDAO.addCarouselImage(galleryTitle, url);
+				// try to retrieve this gallery to update
+				ImageGallery gallery = imageDAO.getGallery(galleryTitle);
+				if (gallery != null)
+				{
+					for (String path : urlList)
+					{
+						gallery.addImage(path);
+					}
+					imageDAO.updateGalleryImages(gallery);
+
+				}
+				// otherwise makea new one
+				else
+				{
+					ImageGallery newGallery = new ImageGallery(galleryTitle, urlList);
+					imageDAO.addGallery(newGallery);
+				}
 			}
+			// otherwise it must be the carousel
+			else if (galleryTitle.equals(Constants.CAROUSEL_TITLE))
+			{
+				System.out.println("This is a Front page Slider Image!");
+				for (String url : urlList)
+				{
+					imageDAO.appendToGallery(Constants.CAROUSEL_TITLE, url);
+				}
+			}
+
+			response.getWriter().append("\n\n-------Testing DB-------\n\n");
+
+			List<ImageGallery> galleryItemList = imageDAO.getAllGalleries();
+
+			for (ImageGallery itemDB : galleryItemList)
+			{
+				response.getWriter().append(itemDB.toString() + "\n\n");
+			}
+
+			response.sendRedirect("admin");
 		}
-
-		response.getWriter().append("\n\n-------Testing DB-------\n\n");
-
-		List<ImageGallery> galleryItemList = imageDAO.getAllGalleries();
-
-		for (ImageGallery itemDB : galleryItemList) {
-			response.getWriter().append(itemDB.toString() + "\n\n");
-		}
-
-		response.sendRedirect("admin");
 
 	}
 
-	private void upload(Part filePart) throws IOException, AmazonServiceException {
+	private void upload(Part filePart) throws IOException, AmazonServiceException
+	{
 		String fileName = filePart.getSubmittedFileName();
 		InputStream input = filePart.getInputStream();
 		long size = filePart.getSize();
 
-		// TODO not this
-		BasicAWSCredentials creds = FileUploadServlet.getAwsCreds(this.getServletContext());
+		BasicAWSCredentials creds = Constants.getAwsCreds(this.getServletContext());
+
 		AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(creds))
 				.withRegion("us-east-1").build();
 
@@ -146,30 +185,5 @@ public class FileUploadServlet extends HttpServlet
 
 		s3Client.putObject(new PutObjectRequest(BUCKET_NAME, fileName, input, metaData));
 		// TODO ImageMagick
-	}
-
-	public static BasicAWSCredentials getAwsCreds(ServletContext context) {
-		String accessKey = null;
-		String secretKey = null;
-
-		String path = context.getRealPath("/") + "WEB-INF/" + "aws_cred.txt";
-		
-		File file = new File(path);
-		System.out.print(file.getAbsolutePath());
-		try {
-			Scanner scanner = new Scanner(file);
-
-			accessKey = scanner.nextLine();
-			secretKey = scanner.nextLine();
-			
-			scanner.close();
-
-		}
-
-		catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-
-		return new BasicAWSCredentials(accessKey, secretKey);
 	}
 }

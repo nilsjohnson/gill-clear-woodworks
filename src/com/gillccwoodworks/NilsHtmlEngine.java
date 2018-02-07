@@ -11,7 +11,6 @@ import java.util.List;
 
 import javax.servlet.ServletContext;
 
-import data.CarouselItem;
 import data.ImageGallery;
 import data.ImageDAO;
 
@@ -49,6 +48,11 @@ public class NilsHtmlEngine
 		// for each gallery item, generate the html
 		for (ImageGallery gallery : galleriesList)
 		{
+			// skips this gallery
+			if(gallery.getTitle().equals(Constants.CAROUSEL_TITLE))
+			{
+				continue;
+			}
 			// for bootstrap class="col-md-colSize"
 			int colSize = 12 / gallery.getImages().length;
 			// becomes the title
@@ -150,53 +154,62 @@ public class NilsHtmlEngine
 		String output = getHtmlTemplate("image_upload_body.html");
 		StringBuilder galleryTableData = new StringBuilder("");
 		StringBuilder carouselTableData = new StringBuilder("");
-		ArrayList<ImageGallery> galleryItemList = null;
+		ArrayList<ImageGallery> galleryList = null;
 
 		String noUploadAddress = "img//no_uploaded.png";
 
 		// get the galleries table, generate html table, and put in output
-		galleryItemList = imageDAO.getAllGalleries();
+		galleryList = imageDAO.getAllGalleries();
+		ImageGallery carouselGallery = null;
 
-		for (ImageGallery item : galleryItemList)
+		for (ImageGallery gallery : galleryList)
 		{
+			
+			if(gallery.getTitle().equals(Constants.CAROUSEL_TITLE))
+			{
+				carouselGallery = gallery;
+				continue;
+			}
+			
 			String galleryRowTemplate = getHtmlTemplate("gallery_table_row.html");
-			int numImages = item.getImages().length;
+			int numImages = gallery.getImages().length;
 
-			galleryRowTemplate = galleryRowTemplate.replaceAll("TITLE", item.getTitle());
+			galleryRowTemplate = galleryRowTemplate.replaceAll("TITLE", gallery.getTitle());
 
 			galleryRowTemplate = galleryRowTemplate.replace("IMG_1",
-					(numImages >= 1 ? item.getImages()[0] : noUploadAddress));
+					(numImages >= 1 ? gallery.getImages()[0] : noUploadAddress));
 			galleryRowTemplate = galleryRowTemplate.replace("IMG_2",
-					(numImages >= 2 ? item.getImages()[1] : noUploadAddress));
+					(numImages >= 2 ? gallery.getImages()[1] : noUploadAddress));
 			galleryRowTemplate = galleryRowTemplate.replace("IMG_3",
-					(numImages >= 3 ? item.getImages()[2] : noUploadAddress));
+					(numImages >= 3 ? gallery.getImages()[2] : noUploadAddress));
 			galleryRowTemplate = galleryRowTemplate.replace("IMG_4",
-					(numImages >= 4 ? item.getImages()[3] : noUploadAddress));
+					(numImages >= 4 ? gallery.getImages()[3] : noUploadAddress));
 			galleryRowTemplate = galleryRowTemplate.replace("IMG_5",
-					(numImages >= 5 ? item.getImages()[4] : noUploadAddress));
+					(numImages >= 5 ? gallery.getImages()[4] : noUploadAddress));
 			galleryRowTemplate = galleryRowTemplate.replace("IMG_6",
-					(numImages == 6 ? item.getImages()[5] : noUploadAddress));
+					(numImages == 6 ? gallery.getImages()[5] : noUploadAddress));
 
 			galleryTableData.append(galleryRowTemplate + "\n");
 		}
 
 		output = output.replace("CURRENT_GALLERY_IMAGES_TABLE", galleryTableData);
 
-		// get the carosuel table, generate html table and put in output
+		// get the carosuel table, generate html table and put in output		
 
-		CarouselItem[] carouselitems = imageDAO.getAllCarouselImages();
-
-		for (CarouselItem item : carouselitems)
+		if (carouselGallery != null)
 		{
-			String carouselRowTemplate = getHtmlTemplate("carousel_image_row.html");
+			for (String carosuelImgPath : carouselGallery.getImages())
+			{
+				String carouselRowTemplate = getHtmlTemplate("carousel_image_row.html");
 
-			carouselRowTemplate = carouselRowTemplate.replace("TITLE", item.getCarousel());
-			carouselRowTemplate = carouselRowTemplate.replaceAll("IMG", item.getAddress());
+				carouselRowTemplate = carouselRowTemplate.replace("TITLE", carouselGallery.getTitle());
+				carouselRowTemplate = carouselRowTemplate.replaceAll("IMG", carosuelImgPath);
 
-			carouselTableData.append(carouselRowTemplate + "\n");
+				carouselTableData.append(carouselRowTemplate + "\n");
+			}
+
+			output = output.replace("CAROUSEL_IMAGES_TABLE", carouselTableData);
 		}
-
-		output = output.replace("CAROUSEL_IMAGES_TABLE", carouselTableData);
 
 		return output;
 	}
@@ -210,18 +223,18 @@ public class NilsHtmlEngine
 		StringBuilder indicatorHtml = new StringBuilder("");
 		StringBuilder imageHtml = new StringBuilder("");
 
-		CarouselItem[] carouselImages = imageDAO.getAllCarouselImages();
-
-		for (int i = 0; i < carouselImages.length; i++)
+		String[] carosuelImgPaths = imageDAO.getImagesByGalleryName(Constants.CAROUSEL_TITLE);
+		
+		for (int i = 0; carosuelImgPaths != null && i < carosuelImgPaths.length; i++)
 		{
 			// get the item
-			CarouselItem item = carouselImages[i];
+			String path = carosuelImgPaths[i];
 			// get the template for the <img src=...> tag
 			String carImgTemplate = getHtmlTemplate("carousel_image.html");
 			// get the template for the carousel indicatior tag
 			String carIndicatorTag = getHtmlTemplate("carousel_indicator.html");
 
-			carImgTemplate = carImgTemplate.replace("IMG", item.getAddress());
+			carImgTemplate = carImgTemplate.replace("IMG", path);
 			if (i > 0)
 			{
 				carImgTemplate = carImgTemplate.replace("active", "");

@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import data.ImageDAO;
+import data.ImageGallery;
 
 
 @WebServlet("/delete")
@@ -24,12 +25,12 @@ public class DeleteServlet extends HttpServlet
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		response.sendRedirect("");
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		response.getWriter().append("Delete Post Request: " + request.getParameter("rowName"));
+		response.getWriter().append("Delete Request: " + request.getParameter("rowName"));
 		try
 		{
 			ImageDAO imageDAO = new ImageDAO();
@@ -38,14 +39,21 @@ public class DeleteServlet extends HttpServlet
 			if(request.getParameter("rowName") != null)
 			{
 				//System.out.println("Deleting a gallery. Row name: " + request.getParameter("rowName"));
-				imageDAO.deleteGalleryRow(request.getParameter("rowName"));
+				imageDAO.deleteGallery(request.getParameter("rowName"));
 				response.sendRedirect("admin");
 			}
+			// if the request was to delete a main slider image
 			else if (request.getParameter("rowNameSlider") != null)
 			{
 				//System.out.println("Request to delete: " + request.getParameter("rowNameSlider"));
 				String imageToDelete = request.getParameter("rowNameSlider");
-				imageDAO.deleteCarouselImage(imageToDelete);
+				
+				ImageGallery gallery = imageDAO.getGallery(Constants.CAROUSEL_TITLE);
+				gallery.deleteImage(imageToDelete);
+				
+				imageDAO.updateGalleryImages(gallery);
+				
+				
 				response.sendRedirect("admin");
 			}
 		}
