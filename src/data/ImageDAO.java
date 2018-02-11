@@ -46,7 +46,6 @@ public class ImageDAO extends DAO
 		{
 			closeConnection();
 		}
-
 	}
 	
 	/**

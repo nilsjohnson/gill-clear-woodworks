@@ -10,9 +10,11 @@ public class ImageDbSchema
 		
 		public static final class Cols
 		{
+			public static final String ID = "id";
 			public static final String PATH = "path";
 			public static final String GALLERY_NAME = "galleryName";
 			public static final String GALLERY_INDEX = "galleryIndex";
 		}
 	}
+	
 }

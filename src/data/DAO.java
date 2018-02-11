@@ -28,12 +28,12 @@ public abstract class DAO
 		{
 			ex.printStackTrace();
 		}
-		
+	
 		String createImagesTable = "CREATE TABLE IF NOT EXISTS " + ImageTable.NAME + " ("
-				+  ImageTable.Cols.PATH + " varchar(" + ImageTable.MAX_PATH_LENGTH + ") not null,"
-				+  ImageTable.Cols.GALLERY_NAME + " varchar(" + ImageTable.MAX_NAME_LENGTH + "),"
-				+  ImageTable.Cols.GALLERY_INDEX + " integer not null,"
-				+ "primary key (" + ImageTable.Cols.PATH + ")" 
+				+ ImageTable.Cols.ID + " INTEGER PRIMARY KEY,"
+				+ ImageTable.Cols.PATH + " varchar(" + ImageTable.MAX_PATH_LENGTH + ") not null, "
+				+ ImageTable.Cols.GALLERY_NAME + " varchar(" + ImageTable.MAX_NAME_LENGTH + "), "
+				+ ImageTable.Cols.GALLERY_INDEX + " integer not null"
 				+ ");";
 		
 		try (Connection conn = DriverManager.getConnection(dbPath); Statement stmt = conn.createStatement())
