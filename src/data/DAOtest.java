@@ -8,14 +8,6 @@ public class DAOtest
 
 	public static void main(String[] args)
 	{
-
-		String[] images = { "BorderCollie", "Golden Retreiver", "Spaniel", "German Shepherd" };
-		String[] images2 = { "Guppy", "Goldfish", "Platy", "Crab" };
-		String[] images3 = { "Sparrow", "Dove", "Crow", "Warbler", "Woodpecker" };
-
-		String title = "Dogs to Birds";
-		String title2 = "Fish";
-
 		ImageDAO dao = null;
 
 		try
@@ -26,11 +18,29 @@ public class DAOtest
 		{
 			e.printStackTrace();
 		}
+		
+		// gallery images
+		String[] images = { "1 Collie", "2 Golden", "3 Spaniel", "4 Shep", "5 Pitbull", "6 Afgan" };
+		String[] images2 = { "Guppy", "Goldfish", "Platy", "Crab" };
+
+		String title = "gallery one";
+		String title2 = "Fish";
+
+	
 
 		ImageGallery gallery = new ImageGallery(title, images);
 		ImageGallery gallery2 = new ImageGallery(title2, images2);
-		dao.addGallery(gallery);
-		dao.addGallery(gallery2);
+		
+		try
+		{
+			dao.insertOrRelaceGallery(gallery);
+			dao.insertOrRelaceGallery(gallery2);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	
 
 		// get the galleries just made and print them
 		ArrayList<ImageGallery> galleryList = dao.getAllGalleries();
@@ -39,32 +49,10 @@ public class DAOtest
 		{
 			System.out.println(gal.toString());
 		}
-
-		System.out.println("updating gallery");
-		gallery.setImages(images3);
-		dao.updateGalleryImages(gallery);
-
-		galleryList = dao.getAllGalleries();
-
-		for (ImageGallery gal : galleryList)
-		{
-			System.out.println(gal.toString());
-		}
-
-		// adding on on
-		System.out.println("adding a path");
-		dao.appendToGallery(title, "a new path in dogs to birds, at the end");
-
-		galleryList = dao.getAllGalleries();
-
-		for (ImageGallery gal : galleryList)
-		{
-			System.out.println(gal.toString());
-		}
-
-		System.out.println("testing delete");
-		gallery.deleteImage("Crow");
-		System.out.println(gallery.toString());
+		
+		ImageGallery anotherGallery = dao.getGallery(title);
+		
+		System.out.println("\n" + anotherGallery.toString());
 		
 		dao.deleteGallery(title);
 		dao.deleteGallery(title2);

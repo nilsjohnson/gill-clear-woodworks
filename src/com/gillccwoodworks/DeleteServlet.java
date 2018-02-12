@@ -45,15 +45,12 @@ public class DeleteServlet extends HttpServlet
 			// if the request was to delete a main slider image
 			else if (request.getParameter("rowNameSlider") != null)
 			{
-				//System.out.println("Request to delete: " + request.getParameter("rowNameSlider"));
 				String imageToDelete = request.getParameter("rowNameSlider");
+				ImageGallery carosuelGallery = imageDAO.getGallery(Constants.CAROUSEL_TITLE);
 				
-				ImageGallery gallery = imageDAO.getGallery(Constants.CAROUSEL_TITLE);
-				gallery.deleteImage(imageToDelete);
+				carosuelGallery.deleteImage(imageToDelete);
 				
-				imageDAO.updateGalleryImages(gallery);
-				
-				
+				imageDAO.insertOrRelaceGallery(carosuelGallery);				
 				response.sendRedirect("admin");
 			}
 		}

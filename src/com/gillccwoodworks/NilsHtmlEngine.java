@@ -222,8 +222,13 @@ public class NilsHtmlEngine
 		String output = getHtmlTemplate("index.html");
 		StringBuilder indicatorHtml = new StringBuilder("");
 		StringBuilder imageHtml = new StringBuilder("");
-
-		String[] carosuelImgPaths = imageDAO.getImagesByGalleryName(Constants.CAROUSEL_TITLE);
+		ImageGallery carouselGallery = imageDAO.getGallery(Constants.CAROUSEL_TITLE);
+		String[] carosuelImgPaths = null;
+		
+		if(carouselGallery != null)
+		{
+			carosuelImgPaths = carouselGallery.getImages();
+		}
 		
 		for (int i = 0; carosuelImgPaths != null && i < carosuelImgPaths.length; i++)
 		{
