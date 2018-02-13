@@ -12,8 +12,8 @@ public class ImageUtilTest
 	public static void main(String[] args)
 	{
 		double ratio = (double)3.0/2.0;
-		String path = "/home/nils/bears2.jpg";
-		String outputPath = "/home/nils/bear_resize.jpg";
+		String path = "/home/nils/bears2.jpeg";
+		String outputPath = "/home/nils/bear_resize.jpeg";
 		
 		try
 		{

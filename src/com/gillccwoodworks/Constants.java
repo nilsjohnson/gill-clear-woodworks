@@ -10,12 +10,19 @@ import com.amazonaws.auth.BasicAWSCredentials;
 
 public class Constants
 {
+	// for sqllite db and temp files
+	public static final String HOME = "/home/nils/";
 	// bucket where all images are stored
 	public final static String BUCKET_NAME = "forestfriends";
 	// flags main carousel title by its title
 	public static final String CAROUSEL_TITLE = "MAIN_CAROUSEL";
 	public static final int MAX_GALLERY_SIZE = 6;
 	private static BasicAWSCredentials credentials = null;
+	
+	// for image sizing
+	public static int WIDTH = 1200;
+	public static int HEIGHT = 800;
+	public static double DEFAULT_RATIO = (double)WIDTH/(double)HEIGHT;
 	
 	
 	

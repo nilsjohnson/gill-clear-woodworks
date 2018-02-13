@@ -44,7 +44,7 @@ public class ImageUtil
 			
 			double targetWidth = imgHeight*1.0/ratio;
 			double x = ((imgWidth-targetWidth)/2);
-			return image.getSubimage((int) x, 0, imgWidth, (int)targetWidth);
+			return image.getSubimage((int) x, 0, (int)targetWidth, imgHeight);
 		}
 		else if (imageRatio == ratio)
 		{
@@ -60,55 +60,3 @@ public class ImageUtil
 	}
 }
 
-/*	public static void resizeImage(String filePath)
-{
-	double ratioWidth = 3;
-	double ratioHeight = 2;
-	double ratio = ratioWidth/ratioHeight;
-	
-	BufferedImage croppedImage = null;
-	BufferedImage resizedImage = null; 
-	
-	try
-	{
-		BufferedImage originalImage = ImageIO.read(new File(filePath));
-		int type = originalImage.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : originalImage.getType();
-		
-		// this image
-		int imgWidth = originalImage.getHeight();
-		int imgHeight = originalImage.getHeight();
-		
-		double curImageRatio =  (double)imgWidth/(double)imgHeight;
-		
-		// this means we chop off from the top and bottom
-		System.out.println("Your chosen ratio is: " + ratio);
-		System.out.println("this images ratio is: " + imgWidth/imgHeight);
-		
-		if(curImageRatio < ratio)
-		{
-			double targetHeight = imgWidth*ratioHeight/ratioWidth;
-			double x = ((imgHeight-targetHeight)/2)+1;
-			
-			System.out.println("x: " + x);
-			System.out.println("y: " + "0");
-			System.out.println("imgWidth: " + imgWidth);
-			System.out.println("target height: " + targetHeight);
-			
-			croppedImage = originalImage.getSubimage(0, (int)x, imgWidth, (int)targetHeight);
-			resizedImage = resizeImage(croppedImage, type, 900, 600);
-
-		}
-		// this means we chop off the sides
-		else if (imgWidth/imgHeight > ratio)
-		{
-			System.out.println("this doesnt need resizng");
-			resizedImage = resizeImage(originalImage, type, 900, 600);
-		}
-		
-		ImageIO.write(resizedImage, "jpg", new File("/home/nils/bearsm.jpg"));
-	}
-	catch (IOException e)
-	{
-		e.printStackTrace();
-	}
-}*/

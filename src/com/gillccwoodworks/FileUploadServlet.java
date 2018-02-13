@@ -42,6 +42,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 
 import data.ImageGallery;
 import javafx.scene.image.Image;
+import util.ImageUtil;
 import data.ImageDAO;
 
 /**
@@ -100,11 +101,23 @@ public class FileUploadServlet extends HttpServlet
 			for (Part filePart : filePartList)
 			{
 				System.out.println("Uploading: " + filePart.getSubmittedFileName());
-				// upload
-				//upload(filePart);
 				
+				// save image
 				saveFile(filePart);
-
+				
+				// load it as an image
+				BufferedImage image = ImageIO.read(new File(Constants.HOME + filePart.getSubmittedFileName()));
+				// crop
+				image = ImageUtil.cropImage(image, Constants.DEFAULT_RATIO);
+				int type = image.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : image.getType();
+				// resize
+				image = ImageUtil.resizeImage(image, type, Constants.WIDTH, Constants.HEIGHT);
+				// save
+				ImageUtil.writeImageToFile(image, Constants.HOME + filePart.getSubmittedFileName());
+				
+				// upload to aws
+				upload(Constants.HOME + filePart.getSubmittedFileName(), filePart.getSubmittedFileName());
+				
 				String imgUrl = "https://s3.amazonaws.com/" + BUCKET_NAME + "/" + filePart.getSubmittedFileName();
 				// add that to the list to make the gallery item
 				urlList.add(imgUrl);
@@ -167,7 +180,24 @@ public class FileUploadServlet extends HttpServlet
 		catch (Exception e)
 		{
 			response.getWriter().append(e.getMessage());
+			e.printStackTrace();
 		}
+	}
+
+	private void upload(String filePath, String fileName) throws AmazonServiceException
+	{
+
+		File file = new File(filePath);
+		
+		BasicAWSCredentials creds = Constants.getAwsCreds(this.getServletContext());
+		AmazonS3 s3Client = AmazonS3ClientBuilder.
+				standard().
+				withCredentials(new AWSStaticCredentialsProvider(creds))
+				.withRegion("us-east-1")
+				.build();
+
+		s3Client.putObject(new PutObjectRequest(BUCKET_NAME, fileName, file));
+
 	}
 
 	private void upload(Part filePart) throws IOException, AmazonServiceException
@@ -199,7 +229,7 @@ public class FileUploadServlet extends HttpServlet
 		try
 		{
 			input = filePart.getInputStream();
-			output = new FileOutputStream("/home/nils/" + filePart.getSubmittedFileName());
+			output = new FileOutputStream(Constants.HOME + filePart.getSubmittedFileName());
 			byte[] buf = new byte[1024];
 			int bytesRead;
 
@@ -210,13 +240,15 @@ public class FileUploadServlet extends HttpServlet
 
 			input.close();
 			output.close();
-			
-			
-
 		}
 		catch (IOException ioe)
 		{
 			ioe.printStackTrace();
+		}
+		finally
+		{
+			input = null;
+			output = null;
 		}
 	}
 }
