@@ -37,9 +37,12 @@ body {
 }
 
 hr {
-  width: 40%;
+  width: 60%;
 }
 
+td {
+    white-space: nowrap;
+}
 
 
 .well-trans {

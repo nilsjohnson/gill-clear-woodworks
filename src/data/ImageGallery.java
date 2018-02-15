@@ -38,6 +38,45 @@ public class ImageGallery
 		this.images = images;
 	}
 	
+	public void bumpRight(String path)
+	{
+		if(images != null)
+		{
+			for(int i = 0; i < images.length; i++)
+			{
+				if(images[i].equals(path))
+				{
+					images[i] = images[(i+1) % images.length];
+					images[(i+1) % images.length] = path;
+					break;
+				}
+			}
+		}
+	}
+	
+	public void bumpLeft(String path)
+	{
+		if(images != null)
+		{
+			for(int i = 0; i < images.length; i++)
+			{
+				if(images[i].equals(path) && i == 0)
+				{
+					images[i] = images[images.length-1];
+					images[images.length-1] = path;
+					break;
+				}
+				else if(i > 0 && images[i].equals(path))
+				{
+					images[i] = images[(i-1) % images.length];
+					images[(i-1) % images.length] = path;
+					break;
+				}
+			}
+		}
+	}
+	
+	
 	public void addImage(String path)
 	{
 		if (images != null)

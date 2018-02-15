@@ -65,10 +65,9 @@ public class AdminServlet extends HttpServlet
 
 		if (cookies != null)
 		{
-			System.out.println("cookies were not null");
 			for (Cookie cookie : cookies)
 			{
-				System.out.println("cookie name: " + cookie.getName());
+				//System.out.println("cookie name: " + cookie.getName());
 
 				if (cookie.getName().equals("username"))
 				{
@@ -102,10 +101,9 @@ public class AdminServlet extends HttpServlet
 			// add cookies
 			response.addCookie(usernameCookie);
 			response.addCookie(passwordCookie);
-		} else
+		}
+		else
 		{
-			System.out.println("cookies were null");
-
 			username = request.getParameter("username");
 			password = request.getParameter("password");
 

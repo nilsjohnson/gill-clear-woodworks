@@ -1,6 +1,8 @@
 package com.gillccwoodworks;
 
 import java.io.IOException;
+import java.util.regex.PatternSyntaxException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -35,10 +37,9 @@ public class DeleteServlet extends HttpServlet
 		{
 			ImageDAO imageDAO = new ImageDAO();
 			
-			
+			// if the request was to delete an entire row
 			if(request.getParameter("rowName") != null)
 			{
-				//System.out.println("Deleting a gallery. Row name: " + request.getParameter("rowName"));
 				imageDAO.deleteGallery(request.getParameter("rowName"));
 				response.sendRedirect("admin");
 			}
@@ -51,14 +52,50 @@ public class DeleteServlet extends HttpServlet
 				carosuelGallery.deleteImage(imageToDelete);
 				
 				imageDAO.insertOrRelaceGallery(carosuelGallery);				
-				response.sendRedirect("admin");
+				
 			}
+			// if the request was 'bumpRight
+			else if (request.getParameter("bumpRight") != null)
+			{
+				String galleryAndPath = request.getParameter("bumpRight");
+				try
+				{
+					String[] params = galleryAndPath.split("%");
+					
+					ImageGallery gallery = imageDAO.getGallery(params[0]);
+					gallery.bumpRight(params[1]);
+					imageDAO.insertOrRelaceGallery(gallery);
+				}
+				catch (PatternSyntaxException ex)
+				{
+					ex.printStackTrace();
+				}
+			}
+			//if the request was "bumpLeft"
+			else if (request.getParameter("bumpLeft") != null)
+			{
+				String galleryAndPath = request.getParameter("bumpLeft");
+				try
+				{
+					String[] params = galleryAndPath.split("%");
+					
+					ImageGallery gallery = imageDAO.getGallery(params[0]);
+					gallery.bumpLeft(params[1]);
+					imageDAO.insertOrRelaceGallery(gallery);
+				}
+				catch (PatternSyntaxException ex)
+				{
+					ex.printStackTrace();
+				}
+			}
+			response.sendRedirect("admin");
 		}
 		catch(Exception e)
 		{
 			response.getWriter().print(e.getMessage());
 			e.printStackTrace();
 		}
+		
 
 	}
 

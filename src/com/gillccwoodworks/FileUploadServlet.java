@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -84,6 +85,7 @@ public class FileUploadServlet extends HttpServlet
 					.filter(part -> "file".equals(part.getName()))
 					.collect(Collectors.toList());
 			
+			// validate input
 			if(filePartList.size() > Constants.MAX_GALLERY_SIZE)
 			{
 				throw new Exception("A gallery cannot contain more than 6 images.");
@@ -102,7 +104,7 @@ public class FileUploadServlet extends HttpServlet
 			{
 				System.out.println("Uploading: " + filePart.getSubmittedFileName());
 				
-				// save image
+				// temp save image
 				saveFile(filePart);
 				
 				// load it as an image
@@ -118,10 +120,13 @@ public class FileUploadServlet extends HttpServlet
 				// upload to aws
 				upload(Constants.HOME + filePart.getSubmittedFileName(), filePart.getSubmittedFileName());
 				
-				String imgUrl = "https://s3.amazonaws.com/" + BUCKET_NAME + "/" + filePart.getSubmittedFileName();
+				// delete temp file
+				deleteFile(filePart.getSubmittedFileName());
+				
 				// add that to the list to make the gallery item
+				String imgUrl = "https://s3.amazonaws.com/" + BUCKET_NAME + "/" + filePart.getSubmittedFileName();
 				urlList.add(imgUrl);
-
+				
 				response.getWriter().append(filePart.getSubmittedFileName() + " uploaded!\n\n");
 
 			}
@@ -250,5 +255,11 @@ public class FileUploadServlet extends HttpServlet
 			input = null;
 			output = null;
 		}
+	}
+	
+	private void deleteFile(String path) throws IOException
+	{
+		File file = new File(Constants.HOME + path);
+		Files.deleteIfExists(file.toPath());
 	}
 }

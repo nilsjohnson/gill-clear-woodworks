@@ -31,6 +31,22 @@ public class DAOtest
 		ImageGallery gallery = new ImageGallery(title, images);
 		ImageGallery gallery2 = new ImageGallery(title2, images2);
 		
+		System.out.println("before bump right:");
+		System.out.println(gallery.toString());
+		
+		gallery.bumpRight("6 Afgan");
+		
+		System.out.println("\nafter bump right");
+		System.out.println(gallery.toString());
+		
+		System.out.println("before bump left:");
+		System.out.println(gallery.toString());
+		
+		gallery.bumpLeft("1 Collie");
+		
+		System.out.println("\nafter bump left");
+		System.out.println(gallery.toString());
+		
 		try
 		{
 			dao.insertOrRelaceGallery(gallery);

@@ -156,7 +156,7 @@ public class NilsHtmlEngine
 		StringBuilder carouselTableData = new StringBuilder("");
 		ArrayList<ImageGallery> galleryList = null;
 
-		String noUploadAddress = "img//no_uploaded.png";
+		String noUploadAddress = "img/no_upload.jpg";
 
 		// get the galleries table, generate html table, and put in output
 		galleryList = imageDAO.getAllGalleries();
