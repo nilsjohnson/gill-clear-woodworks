@@ -134,7 +134,7 @@ public class AdminServlet extends HttpServlet
 	private boolean isValidUser(String username, String password)
 	{
 		// only work for this hardcoded user.
-		if (!username.equals("sam") || !password.equals("pass"))
+		if (!username.equals(Constants.getUsername(this.servletContext)) || !password.equals(Constants.getPassword(this.servletContext)))
 		{
 			return false;
 		} else

@@ -28,6 +28,16 @@ public class ImageGallery
 		return this.title;
 	}
 	
+	public int getNumImages()
+	{
+		return this.images.length;
+	}
+	
+	public String getImageAt(int i)
+	{
+		return this.images[i];
+	}
+	
 	public String[] getImages()
 	{
 		return this.images;

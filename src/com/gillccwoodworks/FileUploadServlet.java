@@ -1,34 +1,23 @@
 package com.gillccwoodworks;
 
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
 import com.amazonaws.AmazonClientException;
@@ -37,18 +26,13 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
 import data.ImageGallery;
-import javafx.scene.image.Image;
 import util.ImageUtil;
 import data.ImageDAO;
 
-/**
- * Servlet implementation class FileUploadServlet
- */
 
 @WebServlet("/upload")
 @MultipartConfig
@@ -92,18 +76,16 @@ public class FileUploadServlet extends HttpServlet
 			}
 			if(galleryTitle.equals(""))
 			{
-				throw new Exception("Please enter a gallery title");
+				throw new Exception("Please enter a gallery title.");
 			}
 			if(filePartList.get(0).getSize() == 0)
 			{
-				throw new Exception("No images chosen");
+				throw new Exception("No images selected.");
 			}
 			
 			
 			for (Part filePart : filePartList)
-			{
-				System.out.println("Uploading: " + filePart.getSubmittedFileName());
-				
+			{	
 				// temp save image
 				saveFile(filePart);
 				
@@ -114,13 +96,13 @@ public class FileUploadServlet extends HttpServlet
 				int type = image.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : image.getType();
 				// resize
 				image = ImageUtil.resizeImage(image, type, Constants.WIDTH, Constants.HEIGHT);
-				// save
+				// save over original name
 				ImageUtil.writeImageToFile(image, Constants.HOME + filePart.getSubmittedFileName());
 				
-				// upload to aws
+				// upload to aws  bucketfrom where it was just saved
 				upload(Constants.HOME + filePart.getSubmittedFileName(), filePart.getSubmittedFileName());
 				
-				// delete temp file
+				// delete file now that its in the aws bucket
 				deleteFile(filePart.getSubmittedFileName());
 				
 				// add that to the list to make the gallery item
@@ -203,26 +185,6 @@ public class FileUploadServlet extends HttpServlet
 
 		s3Client.putObject(new PutObjectRequest(BUCKET_NAME, fileName, file));
 
-	}
-
-	private void upload(Part filePart) throws IOException, AmazonServiceException
-	{
-		String fileName = filePart.getSubmittedFileName();
-		InputStream input = filePart.getInputStream();
-		
-		long size = filePart.getSize();
-
-		BasicAWSCredentials creds = Constants.getAwsCreds(this.getServletContext());
-
-		AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(creds))
-				.withRegion("us-east-1").build();
-
-		ObjectMetadata metaData = new ObjectMetadata();
-		metaData.setContentLength(size);
-		metaData.setContentType("image");
-
-		s3Client.putObject(new PutObjectRequest(BUCKET_NAME, fileName, input, metaData));
-		// TODO ImageMagick
 	}
 	
 	private void saveFile(Part filePart)

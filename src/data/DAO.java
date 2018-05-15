@@ -9,11 +9,13 @@ import data.ImageDbSchema.GalleriesTable;
 
 import javax.servlet.ServletContext;
 
+import com.gillccwoodworks.Constants;
+
 
 public abstract class DAO
 {
 	
-	public static String dbPath = "jdbc:sqlite:/home/nils/gccwoodworksImages.db";
+	public static String dbPath = "jdbc:sqlite:" + Constants.HOME + "gccwoodworksImages.db";
 	public static Connection connection = null;
 	protected  ServletContext context;
 

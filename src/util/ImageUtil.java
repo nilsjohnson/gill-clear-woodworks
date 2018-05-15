@@ -25,14 +25,9 @@ public class ImageUtil
 		int imgHeight = image.getHeight();
 		double imageRatio =  (double)imgWidth/(double)imgHeight;
 		
-		System.out.println("You want this image's ratio to be: " + ratio);
-		System.out.println("It is currenty: " + imageRatio);
-		
 		// this means we chop off the top and bottom
 		if(imageRatio < ratio)
 		{
-			System.out.println("Image Ratio: " + imageRatio + " - This image is too tall, cropping off top and bottom");
-			
 			double targetHeight = imgWidth*1.0/ratio;
 			double y = ((imgHeight-targetHeight)/2);
 			return image.getSubimage(0, (int)y, imgWidth, (int)targetHeight);
@@ -48,7 +43,7 @@ public class ImageUtil
 		}
 		else if (imageRatio == ratio)
 		{
-			System.out.println("This image already has the proper ratio");
+			//do nothing at this point
 		}
 		
 		return image;
