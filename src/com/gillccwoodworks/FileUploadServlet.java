@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
@@ -29,8 +30,8 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
-import data.ImageGallery;
 import util.ImageUtil;
+import data.Collection;
 import data.ImageDAO;
 
 
@@ -54,11 +55,11 @@ public class FileUploadServlet extends HttpServlet
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		// to hold the urls of the new images
-		List<String> urlList = new ArrayList<>();
+		ArrayList<String> urlList = new ArrayList<>();
 
 		try
 		{	
-			imageDAO = new ImageDAO(this.getServletContext());
+			imageDAO = new ImageDAO();
 
 			// Retrieves <input type="text" name="description">
 			String galleryTitle = request.getParameter("description");
@@ -69,11 +70,7 @@ public class FileUploadServlet extends HttpServlet
 					.filter(part -> "file".equals(part.getName()))
 					.collect(Collectors.toList());
 			
-			// validate input
-			if(filePartList.size() > Constants.MAX_GALLERY_SIZE)
-			{
-				throw new Exception("A gallery cannot contain more than 6 images.");
-			}
+		
 			if(galleryTitle.equals(""))
 			{
 				throw new Exception("Please enter a gallery title.");
@@ -111,39 +108,12 @@ public class FileUploadServlet extends HttpServlet
 				
 				response.getWriter().append(filePart.getSubmittedFileName() + " uploaded!\n\n");
 
+		
+
+				Collection collection = new Collection(galleryTitle, "Dummy Description", urlList, null);
+				imageDAO.InsertCollection(collection);
 			}
-
-			// if it wasn't flagged as a carousel image upload, make a new gallery
-			if (!galleryTitle.equals(Constants.CAROUSEL_TITLE))
-			{
-				String[] imgArr = new String[urlList.size()];
-
-				for (int i = 0; i < urlList.size(); i++)
-				{
-					imgArr[i] = urlList.get(i);
-				}
-
-				ImageGallery gallery = new ImageGallery(galleryTitle, "Dummy Description", imgArr);
-				imageDAO.insertOrRelaceGallery(gallery);
-			}
-			// otherwise it must be the carousel
-			else if (galleryTitle.equals(Constants.CAROUSEL_TITLE))
-			{
-				// add the new images to the gallery, then upload
-				ImageGallery carouselGallery = imageDAO.getGallery(Constants.CAROUSEL_TITLE);
-
-				if (carouselGallery == null)
-				{
-					carouselGallery = new ImageGallery(Constants.CAROUSEL_TITLE, null, new String[0]);
-				}
-
-				for (String path : urlList)
-				{
-					carouselGallery.addImage(path);
-				}
 	
-				imageDAO.insertOrRelaceGallery(carouselGallery);
-			}
 
 			response.sendRedirect("admin");
 		}

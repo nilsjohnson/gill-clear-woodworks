@@ -40,7 +40,7 @@ public class GalleryServlet extends HttpServlet
 		response.getWriter().append(navBar);
 		
 		// generate and display the body
-		response.getWriter().append(engine.getGalleryBody());
+		//response.getWriter().append(engine.getGalleryBody());
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException

@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import data.ImageDAO;
-import data.ImageGallery;
+
 
 
 @WebServlet("/delete")
@@ -33,9 +33,9 @@ public class DeleteServlet extends HttpServlet
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		response.getWriter().append("Delete Request: " + request.getParameter("rowName"));
-		try
+		/*try
 		{
-			ImageDAO imageDAO = new ImageDAO(this.getServletContext());
+			ImageDAO imageDAO = new ImageDAO(this.getServletContext().getContextPath());
 			
 			// if the request was to delete an entire row
 			if(request.getParameter("rowName") != null)
@@ -94,7 +94,7 @@ public class DeleteServlet extends HttpServlet
 		{
 			response.getWriter().print(e.getMessage());
 			e.printStackTrace();
-		}
+		}*/
 		
 
 	}

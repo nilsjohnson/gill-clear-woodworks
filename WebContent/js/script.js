@@ -1,84 +1,30 @@
-var ukulele_images =
-[
-	"gillcc_table_legs.jpg",
-	"rough_sawn_bench.jpg",
-	"board2.jpg",
-	"board3.jpg",
-	"boards.jpg",
-	"table_board.jpg",	
-	"table_top.jpg",
-	"spalted_maple.jpg",
-	"gillcc_table.jpg"
-]
+// get the image elements
+var images = document.getElementsByClassName('img-thumbnail');
+// array to hold the image sources
+var locations = [];
 
-var switchTo = function(objectId)
+// put the image sources into the array
+for(var i = 0; i < images.length; i++)
 {
-	var obj = $('#'+objectId);
-	obj.siblings().hide();
-	obj.show();
-	$('.nav-pills .active').removeClass('active');
-	$('#'+objectId+'-link').addClass('active');
-	console.log('sup?');
+	locations[i] = images[i].src;
+	console.log(locations[i]);
 }
 
-var openLightbox = function(obj)
+// make the lightbox
+lightBox = new LightBox(locations, "modal-image");
+
+// helper functions to change lightbox
+function setCurrentImage(obj)
 {
-	$('#modal-image').attr('src', obj.src);
-	$('#lightbox').modal('show');
+	lightBox.setCurrentImage(obj);
 }
 
-var closeLightbox = function()
+function nextImage()
 {
-	$('#lightbox').modal('hide');
+	lightBox.nextImage();
 }
 
-var switchLightbox = function(imageId)
+function previousImage()
 {
-	var source = $('#'+imageId)[0].src;
-	if(source.indexOf("back") > 1)
-	{
-		source = source.replace('back', 'front');
-	}
-	else
-	{
-		source = source.replace('front', 'back');
-	}	
-	$('#' + imageId).attr('src', source);
+	lightBox.previousImage();
 }
-
-var lightboxChange = function(instrument, step)
-{
-	var srcStart = "img/";
-	var images;
-	switch(instrument)
-	{
-		case "gallery":
-			images = ukulele_images;
-			break;
-						
-	}
-	var curIndex = 0;
-	var sourceStr = $('#modal-image')[0].src;
-	var currentImage = sourceStr.split('/').pop();
-	for(var i = 0; i < images.length; i++)
-	{
-		if(currentImage == images[i].split('/').pop())
-		{
-			curIndex = i;
-			break;
-		}
-	}
-	var newIndex = curIndex + step;
-	if(newIndex < 0)
-	{
-		newIndex = images.length - 1;
-	}
-	else if(newIndex > images.length - 1)
-	{
-		newIndex = 0;
-	}
-	
-	var srcString = srcStart + images[newIndex];
-	$('#modal-image').attr('src', srcString);
-}
-

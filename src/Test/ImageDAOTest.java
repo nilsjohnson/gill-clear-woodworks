@@ -25,7 +25,7 @@ class ImageDAOTest
 	{		
 		try
 		{
-			imageDAO = new ImageDAO(path);
+			imageDAO = new ImageDAO();
 		}
 		catch (SQLException e)
 		{

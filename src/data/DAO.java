@@ -16,12 +16,12 @@ public abstract class DAO
 	public static Connection connection = null;
 	public static String dbPath = null;
 	
-	protected DAO(String dbLocation) throws SQLException
+	protected DAO() throws SQLException
 	{		
 		try
 		{
 			// load the driver
-			dbPath = "jdbc:sqlite:" + dbLocation + Constants.DB_NAME;
+			dbPath = "jdbc:sqlite:" + Constants.DB_LOCATION + Constants.DB_NAME;
 			Class.forName("org.sqlite.JDBC");
 			
 			openConnection();

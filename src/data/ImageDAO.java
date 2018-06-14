@@ -13,9 +13,9 @@ import data.DbSchema.ImageTable;
 public class ImageDAO extends DAO implements IImageDAO
 {
 
-	public ImageDAO(String dbLocation) throws SQLException
+	public ImageDAO() throws SQLException
 	{
-		super(dbLocation);
+		super();
 	}
 
 	/**
@@ -186,6 +186,74 @@ public class ImageDAO extends DAO implements IImageDAO
 			PreparedStatement imgStmt = connection.prepareStatement(imgDelStr);
 			imgStmt.setString(1, id.toString());
 			imgStmt.executeUpdate();
+		}
+		finally
+		{
+			closeConnection();
+		}
+	}
+
+	@Override
+	public Collection getCollection(UUID uuid) throws Exception
+	{
+		if(uuid == null)
+		{
+			return null;
+		}
+		
+		String quereeey = "SELECT "
+				+ CollectionTable.NAME + "." + CollectionTable.COLS.UUID + ", "
+				+ CollectionTable.NAME + "." + CollectionTable.COLS.TITLE + ", "
+				+ CollectionTable.NAME + "." + CollectionTable.COLS.DESC + ", "
+				+ ImageTable.NAME + ". " + ImageTable.COLS.PATH
+				+ " From " + CollectionTable.NAME + " INNER JOIN " + ImageTable.NAME + " ON "
+				+ CollectionTable.NAME + "." + CollectionTable.COLS.UUID 
+				+ " = " + ImageTable.NAME + "." + ImageTable.COLS.COLLECTION_UUID;
+		
+		try
+		{
+			openConnection();
+			
+			String query = "SELECT "
+					+ CollectionTable.NAME + "." + CollectionTable.COLS.TITLE + ", "
+					+ CollectionTable.NAME + "." + CollectionTable.COLS.DESC + ", "
+					+ ImageTable.NAME + "." + ImageTable.COLS.PATH
+					+ " From " + CollectionTable.NAME + " INNER JOIN " + ImageTable.NAME + " ON "
+					+ CollectionTable.NAME + "." + CollectionTable.COLS.UUID 
+					+ " = " + ImageTable.NAME + "." + ImageTable.COLS.COLLECTION_UUID
+					+ " WHERE " + ImageTable.NAME + "." + ImageTable.COLS.COLLECTION_UUID + " = '" + uuid.toString() + "'";
+			
+			System.out.println(query);
+			
+			Statement stmt = connection.createStatement();
+			
+			ResultSet rSet = stmt.executeQuery(query);	
+			
+			
+			if(rSet.next())
+			{
+				String name = rSet.getString(CollectionTable.COLS.TITLE);
+				String desc = rSet.getString(CollectionTable.COLS.DESC);
+				ArrayList<String> urlList = null;
+				
+				String url = rSet.getString(ImageTable.COLS.PATH);
+				if(url != null)
+				{
+					urlList = new ArrayList<>();
+					urlList.add(url);
+					while(rSet.next())
+					{
+						urlList.add(rSet.getString(ImageTable.COLS.PATH));
+					}
+				}
+				return new Collection(name, desc, urlList, uuid);
+				
+			}
+			else
+			{
+				return null;
+			}
+		
 		}
 		finally
 		{

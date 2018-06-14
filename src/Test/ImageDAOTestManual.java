@@ -2,6 +2,7 @@ package Test;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import data.Collection;
 import data.ImageDAO;
@@ -16,7 +17,7 @@ public class ImageDAOTestManual
 		// make the DAO
 		try
 		{
-			imageDAO = new ImageDAO(path);
+			imageDAO = new ImageDAO();
 		}
 		catch (SQLException e)
 		{
@@ -80,6 +81,11 @@ public class ImageDAOTestManual
 			ArrayList<Collection> collectionList3= imageDAO.getAllCollections();
 			printCollections(collectionList3);
 			
+			System.out.println("getting collection by UUID: ");
+			Collection col = imageDAO.getCollection(UUID.fromString("18356a86-1100-4197-b793-daa2e03e4697"));
+			printCollection(col);
+			
+			
 		}
 		catch (Exception e)
 		{
@@ -92,15 +98,20 @@ public class ImageDAOTestManual
 	{
 		for(Collection collection : collectionList)
 		{
-			System.out.println("Title: " + collection. getTitle());
-			System.out.println("Description: " + collection.getDescription());
-			System.out.println("UUID: " + collection.getId().toString());
-			System.out.println("Image Paths: ");
-			for(int i = 0; i < collection.getNumberOfImages(); i++)
-			{
-				System.out.println("\t" + i + ".) " + collection.getImageAt(i));
-			}
-			System.out.println();
+			printCollection(collection);
 		}
+	}
+	
+	public static void printCollection(Collection collection)
+	{
+		System.out.println("Title: " + collection. getTitle());
+		System.out.println("Description: " + collection.getDescription());
+		System.out.println("UUID: " + collection.getId().toString());
+		System.out.println("Image Paths: ");
+		for(int i = 0; i < collection.getNumberOfImages(); i++)
+		{
+			System.out.println("\t" + i + ".) " + collection.getImageAt(i));
+		}
+		System.out.println();
 	}
 }

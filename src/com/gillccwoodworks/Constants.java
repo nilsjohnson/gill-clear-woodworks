@@ -3,6 +3,7 @@ package com.gillccwoodworks;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
+import java.util.UUID;
 
 import javax.servlet.ServletContext;
 
@@ -10,19 +11,12 @@ import com.amazonaws.auth.BasicAWSCredentials;
 
 public class Constants
 {
-	//////////////////////////////
-	//I dunno about all this!??!//
-	/////////////////////////////
-	// for sqllite db and temp files
-	//public static final String HOME = "/opt/tomcat/";
-	//public static final String HOME = System.getProperty("~") + "/";
+	public static UUID CAROUSEL_UUID = UUID.fromString("9b44fe9a-790b-4438-b0ef-2b1ec9fe08b5");
 	
+	public static final String DB_LOCATION = "/home/nils/";
 	
 	// bucket where all images are stored
 	public final static String BUCKET_NAME = "forestfriends";
-	// flags main carousel title by its title
-	public static final String CAROUSEL_TITLE = "MAIN_CAROUSEL";
-	public static final int MAX_GALLERY_SIZE = 6;
 	public static final String DB_NAME = "gillccwoodworks.db";
 	private static BasicAWSCredentials credentials = null;
 	

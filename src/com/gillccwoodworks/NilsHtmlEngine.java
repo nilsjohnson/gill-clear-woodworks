@@ -23,8 +23,8 @@ public class NilsHtmlEngine
 	{
 		try
 		{
-			servletPath = context.getContextPath();
-			imageDAO = new ImageDAO(servletPath);
+			servletPath = context.getRealPath("/");
+			imageDAO = new ImageDAO();
 		}
 		catch (SQLException e)
 		{
@@ -33,90 +33,7 @@ public class NilsHtmlEngine
 		}
 	}
 
-	/**
-	 * Creates a 'gallery'.
-	 * 
-	 * @return html of a gallery.
-	 */
-	public String getGalleryBody()
-	{
-		String galleryBody = new String(getHtmlTemplate("gallery_body.html"));
-		StringBuilder galleryItems = new StringBuilder("");
 
-		ArrayList<Collection> collectionList = imageDAO.getAllCollections();
-
-		// for each gallery item, generate the html
-		for (Collection collection : collectionList)
-		{
-			String galleryTemplate = null;
-			
-			
-			// skips this gallery
-			if (collection.getTitle().equals(Constants.CAROUSEL_TITLE))
-			{
-				continue;
-			}
-
-			// for bootstrap class="col-md-colSize"
-			int colSize = 12 / collection.getNumImages();
-
-			// becomes the title
-			String title = collection.getTitle();
-
-			// turns the title into id, for swapping thumbnail to main image using
-			// javascript
-			String id = title.replaceAll(" ", "_").toLowerCase();
-
-			if (collection.getNumImages() > 2)
-			{
-				// template for each gallery item
-				galleryTemplate = getHtmlTemplate("gallery_item.html");
-				// set the title and primary image
-				galleryTemplate = galleryTemplate.replace("TITLE", collection.getTitle());
-				galleryTemplate = galleryTemplate.replace("PRIMARY_IMAGE", collection.getImageAt(0));
-				galleryTemplate = galleryTemplate.replace("ID", id);
-
-				// to be the html for the thumbnails that belong to the gallery
-				StringBuilder thumbnails = new StringBuilder("");
-				// for each image in the gallery, make its html and append it to 'thumbnails',
-				for (int i = 0; i < collection.getNumImages(); i++)
-				{
-					// template for each image div
-					String str = getHtmlTemplate("gallery_thumb.html");
-					str = str.replaceAll("ID", id);
-					str = str.replaceAll("COL_SIZE", Integer.toString(colSize));
-					str = str.replaceAll("SOURCE", collection.getImageAt(i));
-					// add this string as a thumbnail image
-					thumbnails.append(str + "\n");
-				}
-				// add to the overall template
-				galleryTemplate = galleryTemplate.replace("THUMBNAILS", thumbnails.toString());
-			}
-			else
-			{
-				// to hold the block of images
-				StringBuilder htmlForAllImagesTogether = new StringBuilder("");
-				
-				// get the main gallery template
-				galleryTemplate = getHtmlTemplate("simple_gallery_item.html");
-				
-				for(int i = 0; i < collection.getNumImages(); i++)
-				{
-					String htmlForCurImage = getHtmlTemplate("gallery_simple_img.html");
-					htmlForCurImage = htmlForCurImage.replaceAll("IMG", collection.getImageAt(i));
-					htmlForCurImage = htmlForCurImage.replaceAll("SIZE", Integer.toString(colSize));
-					htmlForAllImagesTogether.append(htmlForCurImage + "\n");
-				}
-				
-				galleryTemplate = galleryTemplate.replace("IMAGES", htmlForAllImagesTogether.toString());
-			}
-			galleryItems.append(galleryTemplate);
-		}
-
-		galleryBody = galleryBody.replace("GALLERY", galleryItems.toString());
-
-		return galleryBody.toString();
-	}
 
 	/**
 	 * makes the general head that this site uses.
@@ -183,67 +100,7 @@ public class NilsHtmlEngine
 	 */
 	public String getUploadPage()
 	{
-		String output = getHtmlTemplate("image_upload_body.html");
-		StringBuilder galleryTableData = new StringBuilder("");
-		StringBuilder carouselTableData = new StringBuilder("");
-		ArrayList<ImageGallery> galleryList = null;
-
-		String noUploadAddress = "img/no_upload.jpg";
-
-		// get the galleries table, generate html table, and put in output
-		galleryList = imageDAO.getAllGalleries();
-		ImageGallery carouselGallery = null;
-
-		for (ImageGallery gallery : galleryList)
-		{
-
-			if (gallery.getTitle().equals(Constants.CAROUSEL_TITLE))
-			{
-				carouselGallery = gallery;
-				continue;
-			}
-
-			String galleryRowTemplate = getHtmlTemplate("gallery_table_row.html");
-			int numImages = gallery.getNumImages();
-
-			galleryRowTemplate = galleryRowTemplate.replaceAll("TITLE", gallery.getTitle());
-
-			galleryRowTemplate = galleryRowTemplate.replace("IMG_1",
-					(numImages >= 1 ? gallery.getImageAt(0) : noUploadAddress));
-			galleryRowTemplate = galleryRowTemplate.replace("IMG_2",
-					(numImages >= 2 ? gallery.getImageAt(1) : noUploadAddress));
-			galleryRowTemplate = galleryRowTemplate.replace("IMG_3",
-					(numImages >= 3 ? gallery.getImageAt(2) : noUploadAddress));
-			galleryRowTemplate = galleryRowTemplate.replace("IMG_4",
-					(numImages >= 4 ? gallery.getImageAt(3) : noUploadAddress));
-			galleryRowTemplate = galleryRowTemplate.replace("IMG_5",
-					(numImages >= 5 ? gallery.getImageAt(4) : noUploadAddress));
-			galleryRowTemplate = galleryRowTemplate.replace("IMG_6",
-					(numImages == 6 ? gallery.getImageAt(5) : noUploadAddress));
-
-			galleryTableData.append(galleryRowTemplate + "\n");
-		}
-
-		output = output.replace("CURRENT_GALLERY_IMAGES_TABLE", galleryTableData);
-
-		// get the carosuel table, generate html table and put in output
-
-		if (carouselGallery != null)
-		{
-			for (String carosuelImgPath : carouselGallery.getImages())
-			{
-				String carouselRowTemplate = getHtmlTemplate("carousel_image_row.html");
-
-				carouselRowTemplate = carouselRowTemplate.replace("TITLE", carouselGallery.getTitle());
-				carouselRowTemplate = carouselRowTemplate.replaceAll("IMG", carosuelImgPath);
-
-				carouselTableData.append(carouselRowTemplate + "\n");
-			}
-
-			output = output.replace("CAROUSEL_IMAGES_TABLE", carouselTableData);
-		}
-
-		return output;
+		return null;
 	}
 
 	/**
@@ -254,41 +111,46 @@ public class NilsHtmlEngine
 		String output = getHtmlTemplate("index.html");
 		StringBuilder indicatorHtml = new StringBuilder("");
 		StringBuilder imageHtml = new StringBuilder("");
-		ImageGallery carouselGallery = imageDAO.getGallery(Constants.CAROUSEL_TITLE);
-		String[] carosuelImgPaths = null;
-
-		if (carouselGallery != null)
+		try
 		{
-			carosuelImgPaths = carouselGallery.getImages();
-		}
+			Collection carouselCollection = imageDAO.getCollection(Constants.CAROUSEL_UUID);
 
-		for (int i = 0; carosuelImgPaths != null && i < carosuelImgPaths.length; i++)
+			if(carouselCollection != null)
+			{
+				for (int i = 0; i < carouselCollection.getNumberOfImages(); i++)
+				{
+					// get the item
+					String path = carouselCollection.getImageAt(i);
+					// get the template for the <img src=...> tag
+					String carImgTemplate = getHtmlTemplate("carousel_image.html");
+					// get the template for the carousel indicatior tag
+					String carIndicatorTag = getHtmlTemplate("carousel_indicator.html");
+
+					carImgTemplate = carImgTemplate.replace("IMG", path);
+					if (i > 0)
+					{
+						carImgTemplate = carImgTemplate.replace("active", "");
+					}
+					imageHtml = imageHtml.append(carImgTemplate + "\n");
+
+					carIndicatorTag = carIndicatorTag.replaceAll("NUM", Integer.toString(i));
+					if (i == 0)
+					{
+						carIndicatorTag = carIndicatorTag.replace("class=\"\"", "class=\"active\"");
+					}
+					indicatorHtml = indicatorHtml.append(carIndicatorTag + "\n");
+				}
+			}
+			output = output.replace("INDICATORS", indicatorHtml.toString());
+			output = output.replace("IMAGES", imageHtml.toString());
+
+			return output;
+		}
+		catch (Exception e)
 		{
-			// get the item
-			String path = carosuelImgPaths[i];
-			// get the template for the <img src=...> tag
-			String carImgTemplate = getHtmlTemplate("carousel_image.html");
-			// get the template for the carousel indicatior tag
-			String carIndicatorTag = getHtmlTemplate("carousel_indicator.html");
-
-			carImgTemplate = carImgTemplate.replace("IMG", path);
-			if (i > 0)
-			{
-				carImgTemplate = carImgTemplate.replace("active", "");
-			}
-			imageHtml = imageHtml.append(carImgTemplate + "\n");
-
-			carIndicatorTag = carIndicatorTag.replaceAll("NUM", Integer.toString(i));
-			if (i == 0)
-			{
-				carIndicatorTag = carIndicatorTag.replace("class=\"\"", "class=\"active\"");
-			}
-			indicatorHtml = indicatorHtml.append(carIndicatorTag + "\n");
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
-		output = output.replace("INDICATORS", indicatorHtml.toString());
-		output = output.replace("IMAGES", imageHtml.toString());
-
 		return output;
 	}
 }
