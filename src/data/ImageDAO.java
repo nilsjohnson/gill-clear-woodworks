@@ -3,201 +3,194 @@ package data;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.UUID;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.DeleteObjectRequest;
-import com.gillccwoodworks.Constants;
-import com.gillccwoodworks.FileUploadServlet;
+import data.DbSchema.CollectionTable;
+import data.DbSchema.ImageTable;
 
-import data.ImageDbSchema.GalleriesTable;
-
-
-public class ImageDAO extends DAO
+public class ImageDAO extends DAO implements IImageDAO
 {
-	public ImageDAO() throws SQLException
+
+	public ImageDAO(String dbLocation) throws SQLException
 	{
-		super();
+		super(dbLocation);
 	}
 
-
-	public ArrayList<ImageGallery> getAllGalleries()
+	/**
+	 * @return All collections in DB.
+	 */
+	@Override
+	public ArrayList<Collection> getAllCollections() throws Exception
 	{
-		ArrayList<ImageGallery> galleryList = new ArrayList<>();
-		
+		ArrayList<Collection> collectionList = new ArrayList<>();
+
 		try
 		{
 			openConnection();
-
-			PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM " + GalleriesTable.NAME);
-
-			ResultSet rSet = preparedStatement.executeQuery();
-
-			// get the names of each gallery
-			while (rSet.next())
+			
+			String query = "SELECT "
+					+ CollectionTable.NAME + "." + CollectionTable.COLS.UUID + ", "
+					+ CollectionTable.NAME + "." + CollectionTable.COLS.TITLE + ", "
+					+ CollectionTable.NAME + "." + CollectionTable.COLS.DESC + ", "
+					+ ImageTable.NAME + ". " + ImageTable.COLS.PATH
+					+ " From " + CollectionTable.NAME + " INNER JOIN " + ImageTable.NAME + " ON "
+					+ CollectionTable.NAME + "." + CollectionTable.COLS.UUID 
+					+ " = " + ImageTable.NAME + "." + ImageTable.COLS.COLLECTION_UUID;
+			
+			
+			Statement stmt = connection.createStatement();
+			
+			ResultSet rSet = stmt.executeQuery(query);	
+			
+			UUID uuid;
+			String title = null;
+			String desc = null;
+			ArrayList<String> urlList = new ArrayList<>();
+			UUID lastUUID = null;
+			
+			while(rSet.next())
 			{
-				String title = rSet.getString(1);
+				uuid = UUID.fromString(rSet.getString(CollectionTable.COLS.UUID));
 				
-				ImageGallery gallery = new ImageGallery(title, new String[0]);
-				
-				for(int i = 2; i < Constants.MAX_GALLERY_SIZE+2; i++)
+				if(lastUUID == null || !uuid.equals(lastUUID))
 				{
-					String str = rSet.getString(i);
-					
-					if(str != null)
+					if(lastUUID != null)
 					{
-						gallery.addImage(str);
+						collectionList.add(new Collection(title, desc, urlList, lastUUID));
+						urlList = new ArrayList<>();
 					}
+					title = rSet.getString(CollectionTable.COLS.TITLE);
+					desc = rSet.getString(CollectionTable.COLS.DESC);
 				}
 				
-				galleryList.add(gallery);
+				String url = rSet.getString(ImageTable.COLS.PATH);
+				urlList.add(url);
+				lastUUID = uuid;
 			}
-		}
-		catch(SQLException e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			closeConnection();
-		}
-		
-		return galleryList;
-	}
-	
-	public void insertOrRelaceGallery(ImageGallery gallery) throws Exception
-	{
-		
-		if(gallery.getImages().length > Constants.MAX_GALLERY_SIZE)
-		{
-			throw new Exception("Gallery has too many Images");
-		}
-		
-		String[] images = new String[Constants.MAX_GALLERY_SIZE];
-		
-		for(int i = 0; i < gallery.getImages().length; i++)
-		{
-			images[i] = gallery.getImages()[i];
-		}
-		
-		
-		try
-		{
-			openConnection();
-			String statement = "INSERT or REPLACE into " + GalleriesTable.NAME + " (" 
-					+ GalleriesTable.Cols.GALLERY_NAME + ", "		
-					+ GalleriesTable.Cols.IMG_1_PATH + ", "
-					+ GalleriesTable.Cols.IMG_2_PATH + ", "
-					+ GalleriesTable.Cols.IMG_3_PATH + ", "
-					+ GalleriesTable.Cols.IMG_4_PATH + ", "
-					+ GalleriesTable.Cols.IMG_5_PATH + ", "
-					+ GalleriesTable.Cols.IMG_6_PATH + ") "
-					+ "values (?, ?, ?, ?, ?, ?, ?)";
-					
-					PreparedStatement preparedInsertStatement = connection.prepareStatement(statement);
-
-					preparedInsertStatement.setString(1, gallery.getTitle());
-					preparedInsertStatement.setString(2, images[0]);
-					preparedInsertStatement.setString(3, images[1]);
-					preparedInsertStatement.setString(4, images[2]);
-					preparedInsertStatement.setString(5, images[3]);
-					preparedInsertStatement.setString(6, images[4]);
-					preparedInsertStatement.setString(7, images[5]);
-
-					preparedInsertStatement.executeUpdate();
-		}
-		catch(SQLException e)
-		{
-			e.printStackTrace();
+			
+			if(lastUUID != null)
+			{
+				// to get the last collection
+				collectionList.add(new Collection(title, desc, urlList, lastUUID));
+			}
+			return collectionList;
 		}
 		finally
 		{
 			closeConnection();
 		}
+
 	}
-	
-	public void deleteGallery(String galleryName)
+
+	/**
+	 * @param collection 	The collection to be inserted into DB.
+	 */
+	@Override
+	public void InsertCollection(Collection collection) throws Exception
 	{
+		String collectionInsert = "INSERT into " + CollectionTable.NAME + " ("
+				+ CollectionTable.COLS.TITLE + ", "
+				+ CollectionTable.COLS.DESC + ", "
+				+ CollectionTable.COLS.UUID + ") "
+				+ "VALUES ( ?, ?, ?)";
+		
+		String imgInsert = "INSERT  into " + ImageTable.NAME + " ("
+				+ ImageTable.COLS.PATH + ", "
+				+ ImageTable.COLS.COLLECTION_UUID + ") "
+				+ "VALUES ( ?, ?)";
+		
 		try
 		{
 			openConnection();
 			
-			String statement = "DELETE from " + GalleriesTable.NAME + " WHERE " + GalleriesTable.Cols.GALLERY_NAME + " = ?";
-			PreparedStatement preparedStatement = connection.prepareStatement(statement);
-			preparedStatement.setString(1, galleryName);
+			// Insert the Collection
+			PreparedStatement collectionPrepStmt = connection.prepareStatement(collectionInsert);
+			
+			String uuid = UUID.randomUUID().toString();
+			
+			collectionPrepStmt.setString(1, collection.getTitle());
+			collectionPrepStmt.setString(2, collection.getDescription());
+			collectionPrepStmt.setString(3, uuid);
+			collectionPrepStmt.executeUpdate();
+			
+			// Insert the images
+			PreparedStatement imgPrepStmt = connection.prepareStatement(imgInsert);
+			for(int i = 0; i < collection.getNumberOfImages(); i++)
+			{
+				imgPrepStmt.setString(1, collection.getImageAt(i));
+				imgPrepStmt.setString(2, uuid);
+				imgPrepStmt.executeUpdate();
+			}	
+		}
+		catch(Exception e)
+		{
+			System.out.println(e.getMessage());
+		}
+		finally
+		{
+			closeConnection();
+		}
+	}
+
+	/**
+	 * @param path	The path of the image to remove from DB.
+	 */
+	@Override
+	public void DeleteImage(String path) throws Exception
+	{
+		String imgDelStmt = "DELETE  FROM " + ImageTable.NAME + " WHERE "
+				+ ImageTable.COLS.PATH
+				+ " = ?";
+		try
+		{
+			openConnection();
+
+			PreparedStatement preparedStatement = connection.prepareStatement(imgDelStmt);
+			preparedStatement.setString(1, path);
 			preparedStatement.executeUpdate();
-
-		}
-		catch(SQLException e)
-		{
-			e.printStackTrace();
+			
 		}
 		finally
 		{
 			closeConnection();
 		}
-	}
-	
-	public ImageGallery getGallery(String GalleryName)
-	{
-		ImageGallery gallery = new ImageGallery(GalleryName, new String[0]);
 		
+	}
+
+	/**
+	 * @param id 	The UUID of the collection to delete.
+	 */
+	@Override
+	public void DeleteCollection(UUID id) throws Exception
+	{
 		try
 		{
-			openConnection();
-			
-			//"SELECT userName, passwordCipher, filePath  FROM Users WHERE userName = ?";
-			
-			String statement = "SELECT "
-					+ GalleriesTable.Cols.IMG_1_PATH + ", "
-					+ GalleriesTable.Cols.IMG_2_PATH + ", "
-					+ GalleriesTable.Cols.IMG_3_PATH + ", "
-					+ GalleriesTable.Cols.IMG_4_PATH + ", "
-					+ GalleriesTable.Cols.IMG_5_PATH + ", "
-					+ GalleriesTable.Cols.IMG_6_PATH
-					+ " FROM " + GalleriesTable.NAME
-					+ " WHERE " + GalleriesTable.Cols.GALLERY_NAME
+			String collectionDelStr = "DELETE FROM " + CollectionTable.NAME + " WHERE "
+					+ CollectionTable.COLS.UUID
 					+ " = ?";
 			
-			PreparedStatement preparedStatement = connection.prepareStatement(statement);
-			preparedStatement.setString(1, GalleryName);
-
-			ResultSet rSet = preparedStatement.executeQuery();
-
-			// if the query returns results, the gallery exists
-			if(rSet.next())
-			{
-				for(int i = 1; i < Constants.MAX_GALLERY_SIZE+1; i++)
-				{
-					String str = rSet.getString(i);
-					
-					if(str != null)
-					{
-						gallery.addImage(str);
-					}
-				}
-				
-				return gallery;
-			}
-			// otherwise return null
-			else
-			{
-				return null;
-			}
-		}
-		catch(SQLException e)
-		{
-			e.printStackTrace();
+			String imgDelStr = "DELETE FROM " + ImageTable.NAME + " WHERE "
+					+ ImageTable.COLS.COLLECTION_UUID
+					+ " = ?";
+			
+			openConnection();
+			
+			// remove the collection row
+			PreparedStatement collectionStmt = connection.prepareStatement(collectionDelStr);
+			collectionStmt.setString(1, id.toString());
+			collectionStmt.executeUpdate();
+			
+			// remove the associated image rows
+			PreparedStatement imgStmt = connection.prepareStatement(imgDelStr);
+			imgStmt.setString(1, id.toString());
+			imgStmt.executeUpdate();
 		}
 		finally
 		{
 			closeConnection();
 		}
-		
-		return null;
 	}
-	
+
 }

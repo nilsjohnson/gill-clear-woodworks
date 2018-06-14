@@ -10,20 +10,31 @@ import com.amazonaws.auth.BasicAWSCredentials;
 
 public class Constants
 {
+	//////////////////////////////
+	//I dunno about all this!??!//
+	/////////////////////////////
 	// for sqllite db and temp files
-	public static final String HOME = "/home/ubuntu/";
-	//public static final String HOME = System.getProperty("user.home") + "/";
+	//public static final String HOME = "/opt/tomcat/";
+	//public static final String HOME = System.getProperty("~") + "/";
+	
+	
 	// bucket where all images are stored
 	public final static String BUCKET_NAME = "forestfriends";
 	// flags main carousel title by its title
 	public static final String CAROUSEL_TITLE = "MAIN_CAROUSEL";
 	public static final int MAX_GALLERY_SIZE = 6;
+	public static final String DB_NAME = "gillccwoodworks.db";
 	private static BasicAWSCredentials credentials = null;
 	
 	// for image sizing
 	public static int WIDTH = 1200;
 	public static int HEIGHT = 800;
 	public static double DEFAULT_RATIO = (double)WIDTH/(double)HEIGHT;
+	
+	public static String getHome(ServletContext context)
+	{
+		return  context.getRealPath("/") + "WEB-INF/";
+	}
 	
 	public static BasicAWSCredentials getAwsCreds(ServletContext context)
 	{

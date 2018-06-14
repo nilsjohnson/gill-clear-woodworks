@@ -11,21 +11,20 @@ import java.util.List;
 
 import javax.servlet.ServletContext;
 
-import data.ImageGallery;
+import data.Collection;
 import data.ImageDAO;
 
 public class NilsHtmlEngine
 {
-	private ServletContext context;
-	ImageDAO imageDAO = null;
+	private String servletPath;
+	private ImageDAO imageDAO = null;
 
 	public NilsHtmlEngine(ServletContext context)
 	{
-		this.context = context;
-
 		try
 		{
-			imageDAO = new ImageDAO();
+			servletPath = context.getContextPath();
+			imageDAO = new ImageDAO(servletPath);
 		}
 		catch (SQLException e)
 		{
@@ -44,49 +43,49 @@ public class NilsHtmlEngine
 		String galleryBody = new String(getHtmlTemplate("gallery_body.html"));
 		StringBuilder galleryItems = new StringBuilder("");
 
-		ArrayList<ImageGallery> galleriesList = imageDAO.getAllGalleries();
+		ArrayList<Collection> collectionList = imageDAO.getAllCollections();
 
 		// for each gallery item, generate the html
-		for (ImageGallery gallery : galleriesList)
+		for (Collection collection : collectionList)
 		{
 			String galleryTemplate = null;
 			
 			
 			// skips this gallery
-			if (gallery.getTitle().equals(Constants.CAROUSEL_TITLE))
+			if (collection.getTitle().equals(Constants.CAROUSEL_TITLE))
 			{
 				continue;
 			}
 
 			// for bootstrap class="col-md-colSize"
-			int colSize = 12 / gallery.getNumImages();
+			int colSize = 12 / collection.getNumImages();
 
 			// becomes the title
-			String title = gallery.getTitle();
+			String title = collection.getTitle();
 
 			// turns the title into id, for swapping thumbnail to main image using
 			// javascript
 			String id = title.replaceAll(" ", "_").toLowerCase();
 
-			if (gallery.getNumImages() > 2)
+			if (collection.getNumImages() > 2)
 			{
 				// template for each gallery item
 				galleryTemplate = getHtmlTemplate("gallery_item.html");
 				// set the title and primary image
-				galleryTemplate = galleryTemplate.replace("TITLE", gallery.getTitle());
-				galleryTemplate = galleryTemplate.replace("PRIMARY_IMAGE", gallery.getImageAt(0));
+				galleryTemplate = galleryTemplate.replace("TITLE", collection.getTitle());
+				galleryTemplate = galleryTemplate.replace("PRIMARY_IMAGE", collection.getImageAt(0));
 				galleryTemplate = galleryTemplate.replace("ID", id);
 
 				// to be the html for the thumbnails that belong to the gallery
 				StringBuilder thumbnails = new StringBuilder("");
 				// for each image in the gallery, make its html and append it to 'thumbnails',
-				for (int i = 0; i < gallery.getNumImages(); i++)
+				for (int i = 0; i < collection.getNumImages(); i++)
 				{
 					// template for each image div
 					String str = getHtmlTemplate("gallery_thumb.html");
 					str = str.replaceAll("ID", id);
 					str = str.replaceAll("COL_SIZE", Integer.toString(colSize));
-					str = str.replaceAll("SOURCE", gallery.getImageAt(i));
+					str = str.replaceAll("SOURCE", collection.getImageAt(i));
 					// add this string as a thumbnail image
 					thumbnails.append(str + "\n");
 				}
@@ -101,10 +100,10 @@ public class NilsHtmlEngine
 				// get the main gallery template
 				galleryTemplate = getHtmlTemplate("simple_gallery_item.html");
 				
-				for(int i = 0; i < gallery.getNumImages(); i++)
+				for(int i = 0; i < collection.getNumImages(); i++)
 				{
 					String htmlForCurImage = getHtmlTemplate("gallery_simple_img.html");
-					htmlForCurImage = htmlForCurImage.replaceAll("IMG", gallery.getImageAt(i));
+					htmlForCurImage = htmlForCurImage.replaceAll("IMG", collection.getImageAt(i));
 					htmlForCurImage = htmlForCurImage.replaceAll("SIZE", Integer.toString(colSize));
 					htmlForAllImagesTogether.append(htmlForCurImage + "\n");
 				}
@@ -156,7 +155,7 @@ public class NilsHtmlEngine
 	{
 		String output = null;
 
-		String path = context.getRealPath("/") + "WEB-INF/html/" + fileName;
+		String path = servletPath + "WEB-INF/html/" + fileName;
 
 		try (BufferedReader br = new BufferedReader(new FileReader(path)))
 		{

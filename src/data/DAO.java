@@ -5,48 +5,57 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import data.ImageDbSchema.GalleriesTable;
-
-import javax.servlet.ServletContext;
-
 import com.gillccwoodworks.Constants;
+
+import data.DbSchema.CollectionTable;
+import data.DbSchema.ImageTable;
 
 
 public abstract class DAO
 {
-	
-	public static String dbPath = "jdbc:sqlite:" + Constants.HOME + "gccwoodworksImages.db";
 	public static Connection connection = null;
-	protected  ServletContext context;
-
-	protected DAO() throws SQLException
+	public static String dbPath = null;
+	
+	protected DAO(String dbLocation) throws SQLException
 	{		
 		try
 		{
+			// load the driver
+			dbPath = "jdbc:sqlite:" + dbLocation + Constants.DB_NAME;
 			Class.forName("org.sqlite.JDBC");
+			
+			openConnection();
+
+			String createImgTable = "CREATE TABLE IF NOT EXISTS " + ImageTable.NAME + " ("
+					+ ImageTable.COLS.ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+					+ ImageTable.COLS.PATH + " varchar(" + ImageTable.MAX_PATH_LENGTH + ") NOT NULL, "
+					+ ImageTable.COLS.COLLECTION_UUID + " INTEGER);";
+	
+		
+			String createCollectionTable = "CREATE TABLE IF NOT EXISTS " + CollectionTable.NAME + " ("
+					+ CollectionTable.COLS.UUID + " varchar(" + CollectionTable.UUID_LENGTH + ") PRIMARY KEY, "
+					+ CollectionTable.COLS.TITLE + " varchar(" + CollectionTable.MAX_NAME_LENGTH + ") NOT NULL, "
+					+ CollectionTable.COLS.DESC + " varchar(" + CollectionTable.MAX_DESC_LENGTH + "));";
+	
+			
+			
+			Statement stmt = connection.createStatement();
+			stmt.execute(createImgTable);
+			stmt.execute(createCollectionTable);
+			
 		}
 		catch (ClassNotFoundException ex)
 		{
 			ex.printStackTrace();
 		}
-	
-		String createGalleriesTable = "CREATE TABLE IF NOT EXISTS " + GalleriesTable.NAME + " ("
-				+ GalleriesTable.Cols.GALLERY_NAME + " varchar(" + GalleriesTable.MAX_NAME_LENGTH + ") not null, "
-				+ GalleriesTable.Cols.IMG_1_PATH + " varchar(" + GalleriesTable.MAX_PATH_LENGTH + "), "
-				+ GalleriesTable.Cols.IMG_2_PATH + " varchar(" + GalleriesTable.MAX_PATH_LENGTH + "), "
-				+ GalleriesTable.Cols.IMG_3_PATH + " varchar(" + GalleriesTable.MAX_PATH_LENGTH + "), "
-				+ GalleriesTable.Cols.IMG_4_PATH + " varchar(" + GalleriesTable.MAX_PATH_LENGTH + "), "
-				+ GalleriesTable.Cols.IMG_5_PATH + " varchar(" + GalleriesTable.MAX_PATH_LENGTH + "), "
-				+ GalleriesTable.Cols.IMG_6_PATH + " varchar(" + GalleriesTable.MAX_PATH_LENGTH + "), "
-				+"PRIMARY KEY (" + GalleriesTable.Cols.GALLERY_NAME + "));";
-		
-		try (Connection conn = DriverManager.getConnection(dbPath); Statement stmt = conn.createStatement())
+		finally
 		{
-			stmt.execute(createGalleriesTable);
+			closeConnection();
 		}
 		
+		
 	}
-	
+
 	/**
 	 * use to close connection after accessing database
 	 */

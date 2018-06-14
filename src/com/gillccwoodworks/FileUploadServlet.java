@@ -58,7 +58,7 @@ public class FileUploadServlet extends HttpServlet
 
 		try
 		{	
-			imageDAO = new ImageDAO();
+			imageDAO = new ImageDAO(this.getServletContext());
 
 			// Retrieves <input type="text" name="description">
 			String galleryTitle = request.getParameter("description");
@@ -90,17 +90,17 @@ public class FileUploadServlet extends HttpServlet
 				saveFile(filePart);
 				
 				// load it as an image
-				BufferedImage image = ImageIO.read(new File(Constants.HOME + filePart.getSubmittedFileName()));
+				BufferedImage image = ImageIO.read(new File(Constants.getHome(this.getServletContext()) + filePart.getSubmittedFileName()));
 				// crop
 				image = ImageUtil.cropImage(image, Constants.DEFAULT_RATIO);
 				int type = image.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : image.getType();
 				// resize
 				image = ImageUtil.resizeImage(image, type, Constants.WIDTH, Constants.HEIGHT);
 				// save over original name
-				ImageUtil.writeImageToFile(image, Constants.HOME + filePart.getSubmittedFileName());
+				ImageUtil.writeImageToFile(image, Constants.getHome(this.getServletContext()) + filePart.getSubmittedFileName());
 				
 				// upload to aws  bucketfrom where it was just saved
-				upload(Constants.HOME + filePart.getSubmittedFileName(), filePart.getSubmittedFileName());
+				upload(Constants.getHome(this.getServletContext()) + filePart.getSubmittedFileName(), filePart.getSubmittedFileName());
 				
 				// delete file now that its in the aws bucket
 				deleteFile(filePart.getSubmittedFileName());
@@ -123,7 +123,7 @@ public class FileUploadServlet extends HttpServlet
 					imgArr[i] = urlList.get(i);
 				}
 
-				ImageGallery gallery = new ImageGallery(galleryTitle, imgArr);
+				ImageGallery gallery = new ImageGallery(galleryTitle, "Dummy Description", imgArr);
 				imageDAO.insertOrRelaceGallery(gallery);
 			}
 			// otherwise it must be the carousel
@@ -134,7 +134,7 @@ public class FileUploadServlet extends HttpServlet
 
 				if (carouselGallery == null)
 				{
-					carouselGallery = new ImageGallery(Constants.CAROUSEL_TITLE, new String[0]);
+					carouselGallery = new ImageGallery(Constants.CAROUSEL_TITLE, null, new String[0]);
 				}
 
 				for (String path : urlList)
@@ -196,7 +196,7 @@ public class FileUploadServlet extends HttpServlet
 		try
 		{
 			input = filePart.getInputStream();
-			output = new FileOutputStream(Constants.HOME + filePart.getSubmittedFileName());
+			output = new FileOutputStream(Constants.getHome(this.getServletContext()) + filePart.getSubmittedFileName());
 			byte[] buf = new byte[1024];
 			int bytesRead;
 
@@ -221,7 +221,7 @@ public class FileUploadServlet extends HttpServlet
 	
 	private void deleteFile(String path) throws IOException
 	{
-		File file = new File(Constants.HOME + path);
+		File file = new File(Constants.getHome(this.getServletContext()) + path);
 		Files.deleteIfExists(file.toPath());
 	}
 }

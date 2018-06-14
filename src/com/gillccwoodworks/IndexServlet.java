@@ -26,13 +26,20 @@ public class IndexServlet extends HttpServlet
 	{
 		// TODO Auto-generated method stub
 		super.init(config);
-		context = config.getServletContext();
+		//context = config.getServletContext();
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{	
-		NilsHtmlEngine engine = new NilsHtmlEngine(context);
-		response.getWriter().append(engine.getHomePage());
+		if(this.getServletContext() == null)
+		{
+			System.out.println("servlet context Nullsville");
+		}
+		else
+		{
+			NilsHtmlEngine engine = new NilsHtmlEngine(this.getServletContext());
+			response.getWriter().append(engine.getHomePage());
+		}
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException

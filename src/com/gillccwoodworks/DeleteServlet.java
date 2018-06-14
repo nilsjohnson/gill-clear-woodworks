@@ -35,7 +35,7 @@ public class DeleteServlet extends HttpServlet
 		response.getWriter().append("Delete Request: " + request.getParameter("rowName"));
 		try
 		{
-			ImageDAO imageDAO = new ImageDAO();
+			ImageDAO imageDAO = new ImageDAO(this.getServletContext());
 			
 			// if the request was to delete an entire row
 			if(request.getParameter("rowName") != null)
