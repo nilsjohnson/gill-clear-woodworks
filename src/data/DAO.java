@@ -11,6 +11,7 @@ import data.DbSchema.CollectionTable;
 import data.DbSchema.ImageTable;
 
 
+
 public abstract class DAO
 {
 	public static Connection connection = null;
@@ -27,18 +28,16 @@ public abstract class DAO
 			openConnection();
 
 			String createImgTable = "CREATE TABLE IF NOT EXISTS " + ImageTable.NAME + " ("
-					+ ImageTable.COLS.ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+					+ ImageTable.COLS.UUID + " varchar(" + DbSchema.UUID_LENGTH + ") PRIMARY KEY, "
 					+ ImageTable.COLS.PATH + " varchar(" + ImageTable.MAX_PATH_LENGTH + ") NOT NULL, "
-					+ ImageTable.COLS.COLLECTION_UUID + " INTEGER);";
+					+ ImageTable.COLS.INDEX + " INTEGER, "
+					+ ImageTable.COLS.COLLECTION_UUID + " varchar(" + DbSchema.UUID_LENGTH + "));";
 	
-		
 			String createCollectionTable = "CREATE TABLE IF NOT EXISTS " + CollectionTable.NAME + " ("
-					+ CollectionTable.COLS.UUID + " varchar(" + CollectionTable.UUID_LENGTH + ") PRIMARY KEY, "
+					+ CollectionTable.COLS.UUID + " varchar(" + DbSchema.UUID_LENGTH + ") PRIMARY KEY, "
 					+ CollectionTable.COLS.TITLE + " varchar(" + CollectionTable.MAX_NAME_LENGTH + ") NOT NULL, "
 					+ CollectionTable.COLS.DESC + " varchar(" + CollectionTable.MAX_DESC_LENGTH + "));";
-	
-			
-			
+					
 			Statement stmt = connection.createStatement();
 			stmt.execute(createImgTable);
 			stmt.execute(createCollectionTable);

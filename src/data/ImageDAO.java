@@ -34,11 +34,15 @@ public class ImageDAO extends DAO implements IImageDAO
 					+ CollectionTable.NAME + "." + CollectionTable.COLS.UUID + ", "
 					+ CollectionTable.NAME + "." + CollectionTable.COLS.TITLE + ", "
 					+ CollectionTable.NAME + "." + CollectionTable.COLS.DESC + ", "
-					+ ImageTable.NAME + ". " + ImageTable.COLS.PATH
+					+ ImageTable.NAME + "." + ImageTable.COLS.PATH + ", "
+					+ ImageTable.NAME + "." + ImageTable.COLS.UUID
 					+ " From " + CollectionTable.NAME + " INNER JOIN " + ImageTable.NAME + " ON "
 					+ CollectionTable.NAME + "." + CollectionTable.COLS.UUID 
-					+ " = " + ImageTable.NAME + "." + ImageTable.COLS.COLLECTION_UUID;
+					+ " = " + ImageTable.NAME + "." + ImageTable.COLS.COLLECTION_UUID
+					+ " GROUP BY " + CollectionTable.NAME + "." + CollectionTable.COLS.UUID
+					+ " ORDER BY " + ImageTable.COLS.INDEX  + " ASC;";
 			
+			System.out.println("\n" + query);
 			
 			Statement stmt = connection.createStatement();
 			
@@ -47,8 +51,10 @@ public class ImageDAO extends DAO implements IImageDAO
 			UUID uuid;
 			String title = null;
 			String desc = null;
-			ArrayList<String> urlList = new ArrayList<>();
+			ArrayList<Image> imgList = new ArrayList<>();
 			UUID lastUUID = null;
+			
+			
 			
 			while(rSet.next())
 			{
@@ -58,22 +64,27 @@ public class ImageDAO extends DAO implements IImageDAO
 				{
 					if(lastUUID != null)
 					{
-						collectionList.add(new Collection(title, desc, urlList, lastUUID));
-						urlList = new ArrayList<>();
+						collectionList.add(new Collection(title, desc, imgList, lastUUID));
+						imgList = new ArrayList<>();
 					}
 					title = rSet.getString(CollectionTable.COLS.TITLE);
 					desc = rSet.getString(CollectionTable.COLS.DESC);
 				}
 				
 				String url = rSet.getString(ImageTable.COLS.PATH);
-				urlList.add(url);
+				String imgUUID_str = rSet.getString(ImageTable.COLS.UUID);
+				UUID imgUUID = UUID.fromString(imgUUID_str);
+				
+				Image img = new Image(url, imgUUID);
+				
+				imgList.add(img);
 				lastUUID = uuid;
 			}
 			
 			if(lastUUID != null)
 			{
 				// to get the last collection
-				collectionList.add(new Collection(title, desc, urlList, lastUUID));
+				collectionList.add(new Collection(title, desc, imgList, lastUUID));
 			}
 			return collectionList;
 		}
@@ -97,9 +108,11 @@ public class ImageDAO extends DAO implements IImageDAO
 				+ "VALUES ( ?, ?, ?)";
 		
 		String imgInsert = "INSERT  into " + ImageTable.NAME + " ("
+				+ ImageTable.COLS.UUID + ", "
 				+ ImageTable.COLS.PATH + ", "
+				+ ImageTable.COLS.INDEX + ", "
 				+ ImageTable.COLS.COLLECTION_UUID + ") "
-				+ "VALUES ( ?, ?)";
+				+ "VALUES ( ?, ?, ?, ?)";
 		
 		try
 		{
@@ -108,19 +121,21 @@ public class ImageDAO extends DAO implements IImageDAO
 			// Insert the Collection
 			PreparedStatement collectionPrepStmt = connection.prepareStatement(collectionInsert);
 			
-			String uuid = UUID.randomUUID().toString();
+			String collectionUUID = UUID.randomUUID().toString();
 			
 			collectionPrepStmt.setString(1, collection.getTitle());
 			collectionPrepStmt.setString(2, collection.getDescription());
-			collectionPrepStmt.setString(3, uuid);
+			collectionPrepStmt.setString(3, collectionUUID);
 			collectionPrepStmt.executeUpdate();
 			
 			// Insert the images
 			PreparedStatement imgPrepStmt = connection.prepareStatement(imgInsert);
 			for(int i = 0; i < collection.getNumberOfImages(); i++)
 			{
-				imgPrepStmt.setString(1, collection.getImageAt(i));
-				imgPrepStmt.setString(2, uuid);
+				imgPrepStmt.setString(1, UUID.randomUUID().toString());
+				imgPrepStmt.setString(2, collection.getImageAt(i).path);
+				imgPrepStmt.setString(3, Integer.toString(i));
+				imgPrepStmt.setString(4, collectionUUID);
 				imgPrepStmt.executeUpdate();
 			}	
 		}
@@ -200,15 +215,18 @@ public class ImageDAO extends DAO implements IImageDAO
 		{
 			return null;
 		}
-		
-		String quereeey = "SELECT "
+		// NOT THIS ONE
+		String queryeeeee = "SELECT "
 				+ CollectionTable.NAME + "." + CollectionTable.COLS.UUID + ", "
 				+ CollectionTable.NAME + "." + CollectionTable.COLS.TITLE + ", "
 				+ CollectionTable.NAME + "." + CollectionTable.COLS.DESC + ", "
-				+ ImageTable.NAME + ". " + ImageTable.COLS.PATH
+				+ ImageTable.NAME + ". " + ImageTable.COLS.PATH + ", "
+				+ ImageTable.NAME + ". " + ImageTable.COLS.UUID
 				+ " From " + CollectionTable.NAME + " INNER JOIN " + ImageTable.NAME + " ON "
 				+ CollectionTable.NAME + "." + CollectionTable.COLS.UUID 
-				+ " = " + ImageTable.NAME + "." + ImageTable.COLS.COLLECTION_UUID;
+				+ " = " + ImageTable.NAME + "." + ImageTable.COLS.COLLECTION_UUID
+				+ " ORDER BY " + ImageTable.COLS.INDEX  + " ASC";
+		
 		
 		try
 		{
@@ -217,13 +235,13 @@ public class ImageDAO extends DAO implements IImageDAO
 			String query = "SELECT "
 					+ CollectionTable.NAME + "." + CollectionTable.COLS.TITLE + ", "
 					+ CollectionTable.NAME + "." + CollectionTable.COLS.DESC + ", "
-					+ ImageTable.NAME + "." + ImageTable.COLS.PATH
+					+ ImageTable.NAME + "." + ImageTable.COLS.PATH + ", "
+					+ ImageTable.NAME + "." + ImageTable.COLS.UUID
 					+ " From " + CollectionTable.NAME + " INNER JOIN " + ImageTable.NAME + " ON "
 					+ CollectionTable.NAME + "." + CollectionTable.COLS.UUID 
 					+ " = " + ImageTable.NAME + "." + ImageTable.COLS.COLLECTION_UUID
-					+ " WHERE " + ImageTable.NAME + "." + ImageTable.COLS.COLLECTION_UUID + " = '" + uuid.toString() + "'";
-			
-			System.out.println(query);
+					+ " WHERE " + ImageTable.NAME + "." + ImageTable.COLS.COLLECTION_UUID + " = '" + uuid.toString() + "'"
+					+ " ORDER BY " + ImageTable.COLS.INDEX  + " ASC";
 			
 			Statement stmt = connection.createStatement();
 			
@@ -234,19 +252,22 @@ public class ImageDAO extends DAO implements IImageDAO
 			{
 				String name = rSet.getString(CollectionTable.COLS.TITLE);
 				String desc = rSet.getString(CollectionTable.COLS.DESC);
-				ArrayList<String> urlList = null;
+				ArrayList<Image> imgList = null;
 				
-				String url = rSet.getString(ImageTable.COLS.PATH);
-				if(url != null)
+				String imgUrl = rSet.getString(ImageTable.COLS.PATH);
+				UUID imgUUID = UUID.fromString(rSet.getString(ImageTable.COLS.UUID));
+				if(imgUrl != null)
 				{
-					urlList = new ArrayList<>();
-					urlList.add(url);
+					imgList = new ArrayList<>();
+					imgList.add(new Image(imgUrl, imgUUID));
 					while(rSet.next())
 					{
-						urlList.add(rSet.getString(ImageTable.COLS.PATH));
+						imgUrl = rSet.getString(ImageTable.COLS.PATH);
+						imgUUID = UUID.fromString(rSet.getString(ImageTable.COLS.UUID));
+						imgList.add(new Image(imgUrl, imgUUID));
 					}
 				}
-				return new Collection(name, desc, urlList, uuid);
+				return new Collection(name, desc, imgList, uuid);
 				
 			}
 			else

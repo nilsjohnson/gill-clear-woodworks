@@ -32,6 +32,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 
 import util.ImageUtil;
 import data.Collection;
+import data.Image;
 import data.ImageDAO;
 
 
@@ -54,15 +55,19 @@ public class FileUploadServlet extends HttpServlet
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		// to hold the urls of the new images
-		ArrayList<String> urlList = new ArrayList<>();
+		// to hold the urls and UUIDs of the new images
+		ArrayList<Image> imageList = new ArrayList<>();
 
 		try
 		{	
 			imageDAO = new ImageDAO();
 
-			// Retrieves <input type="text" name="description">
-			String galleryTitle = request.getParameter("description");
+			// Retrieves <input type="text" name="gallery_title">
+			String galleryTitle = request.getParameter("gallery_title");
+			
+			// Retrieves <textarea type="input" name="gallery_description" id="gallery_description">
+			String galleryDesc = request.getParameter("gallery_description");
+			
 
 			// Retrieves <input type="file" name="file" multiple="true">
 			List<Part> filePartList = request.getParts()
@@ -70,11 +75,6 @@ public class FileUploadServlet extends HttpServlet
 					.filter(part -> "file".equals(part.getName()))
 					.collect(Collectors.toList());
 			
-		
-			if(galleryTitle.equals(""))
-			{
-				throw new Exception("Please enter a gallery title.");
-			}
 			if(filePartList.get(0).getSize() == 0)
 			{
 				throw new Exception("No images selected.");
@@ -104,15 +104,13 @@ public class FileUploadServlet extends HttpServlet
 				
 				// add that to the list to make the gallery item
 				String imgUrl = "https://s3.amazonaws.com/" + BUCKET_NAME + "/" + filePart.getSubmittedFileName();
-				urlList.add(imgUrl);
+				imageList.add(new Image(imgUrl));
 				
 				response.getWriter().append(filePart.getSubmittedFileName() + " uploaded!\n\n");
-
-		
-
-				Collection collection = new Collection(galleryTitle, "Dummy Description", urlList, null);
-				imageDAO.InsertCollection(collection);
 			}
+			
+			Collection collection = new Collection(galleryTitle, galleryDesc, imageList);
+			imageDAO.InsertCollection(collection);
 	
 
 			response.sendRedirect("admin");

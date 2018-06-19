@@ -7,10 +7,16 @@ public class Collection
 {
 	private String title;
 	private String description;
-	private ArrayList<String> imageList;
+	private ArrayList<Image> imageList;
 	private UUID id;
 	
-	public Collection(String title, String description, ArrayList<String> imageList, UUID id)
+	
+	public Collection(String title, String description, ArrayList<Image> imageList)
+	{
+		this(title, description, imageList, null);
+	}
+	
+	public Collection(String title, String description, ArrayList<Image> imageList, UUID id)
 	{
 		this.title = title;
 		this.description = description;
@@ -40,17 +46,17 @@ public class Collection
 	
 	public void addImage(String path)
 	{
-		imageList.add(path);
+		imageList.add(new Image(path));
 	}
 	
-	public void bumpRight(String path) throws Exception
+	public void bumpRight(UUID uuid) throws Exception
 	{
 		for(int i = 0; i < imageList.size(); i++)
 		{
-			if(imageList.get(i).equals(path))
+			if(imageList.get(i).uuid.equals(uuid))
 			{
-				String temp = imageList.get((i+1) % imageList.size());
-				imageList.set((i+1) % imageList.size(), path);
+				Image temp = imageList.get((i+1) % imageList.size());
+				imageList.set((i+1) % imageList.size(), imageList.get(i));
 				imageList.set(i, temp);
 				return;
 			}
@@ -58,22 +64,22 @@ public class Collection
 		throw new Exception("Image not found. Could not bump right.");
 	}
 	
-	public void bumpLeft(String path) throws Exception
+	public void bumpLeft(UUID id) throws Exception
 	{
 		for(int i = 0; i < imageList.size(); i++)
 		{
-			if(imageList.get(i).equals(path))
+			if(imageList.get(i).uuid.equals(id))
 			{
-				String temp;
+				Image temp;
 				if(i-1 < 0)
 				{
 					temp = imageList.get(imageList.size()-1);
-					imageList.set(imageList.size()-1, path);
+					imageList.set(imageList.size()-1, imageList.get(i));
 				}
 				else
 				{
 					temp = imageList.get(i-1);
-					imageList.set(i-1, path);
+					imageList.set(i-1, imageList.get(i));
 				}
 				
 				imageList.set(i, temp);	
@@ -83,7 +89,7 @@ public class Collection
 		throw new Exception("Image not found. Could not bump left.");
 	}
 
-	public String getImageAt(int i)
+	public Image getImageAt(int i)
 	{
 		return imageList.get(i);
 	}

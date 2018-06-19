@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import com.gillccwoodworks.Constants;
 
 import data.Collection;
+import data.Image;
 import data.ImageDAO;
 
 class ImageDAOTest
@@ -48,15 +49,15 @@ class ImageDAOTest
 	@Test
 	void insertCollectionTest()
 	{
-		ArrayList<String> imageList = new ArrayList<>();
-		imageList.add("Image_1");
-		imageList.add("Image_2");
-		imageList.add("Image_3");
-		imageList.add("Image_4");
-		imageList.add("Image_5");
-		imageList.add("Image_6");
+		ArrayList<Image> imageList = new ArrayList<>();
+		imageList.add(new Image("Image_1"));
+		imageList.add(new Image("Image_2"));
+		imageList.add(new Image("Image_3"));
+		imageList.add(new Image("Image_4"));
+		imageList.add(new Image("Image_5"));
+		imageList.add(new Image("Image_6"));
 		
-		Collection collection = new Collection("Test Title", "Test Desc", imageList, null);
+		Collection collection = new Collection("Test Title", "Test Desc", imageList);
 		
 		try
 		{

@@ -12,6 +12,7 @@ import java.util.List;
 import javax.servlet.ServletContext;
 
 import data.Collection;
+import data.Image;
 import data.ImageDAO;
 
 public class NilsHtmlEngine
@@ -100,7 +101,50 @@ public class NilsHtmlEngine
 	 */
 	public String getUploadPage()
 	{
-		return null;
+		// outermost template
+		String output = getHtmlTemplate("admin/admin_body.html");
+		ArrayList<Collection> collectionList;
+		
+		// get the images
+		try
+		{
+			collectionList = imageDAO.getAllCollections();
+		}
+		catch (Exception e)
+		{
+			return "Problem retrieving collection: " + e.getMessage();
+		}
+		
+		StringBuilder allCollectionsHtml = new StringBuilder();
+		
+		System.out.println("number of collections: " + collectionList.size());
+		
+		for(Collection curCollection : collectionList)
+		{
+			// set title, desc, ids for buttons
+			String collectionTemplate = getHtmlTemplate("admin/collection.html");
+			collectionTemplate = collectionTemplate.replaceAll("COLLECTION_TITLE", curCollection.getTitle());
+			collectionTemplate = collectionTemplate.replaceAll("COLLECTION_DESCRIPTION", curCollection.getDescription());
+			collectionTemplate = collectionTemplate.replaceAll("COLLECTION_UUID", curCollection.getId().toString());
+			
+			StringBuilder curCollectionAllImagesHtml = new StringBuilder();
+			for(int i = 0; i < curCollection.getNumberOfImages(); i++)
+			{
+				String imageDivHtml = getHtmlTemplate("admin/img_div.html");
+				imageDivHtml = imageDivHtml.replace("IMAGE_PATH", curCollection.getImageAt(i).path);
+				imageDivHtml = imageDivHtml.replaceAll("IMG_ID", curCollection.getImageAt(i).uuid.toString());
+				curCollectionAllImagesHtml = curCollectionAllImagesHtml.append(imageDivHtml);
+			}
+			
+			collectionTemplate = collectionTemplate.replace("IMAGES", curCollectionAllImagesHtml.toString());
+			
+			allCollectionsHtml = allCollectionsHtml.append(collectionTemplate);
+		}
+		
+		output = output.replace("COLLECTIONS", allCollectionsHtml.toString());
+		
+		return output;
+		
 	}
 
 	/**
@@ -120,7 +164,7 @@ public class NilsHtmlEngine
 				for (int i = 0; i < carouselCollection.getNumberOfImages(); i++)
 				{
 					// get the item
-					String path = carouselCollection.getImageAt(i);
+					String path = carouselCollection.getImageAt(i).path;
 					// get the template for the <img src=...> tag
 					String carImgTemplate = getHtmlTemplate("carousel_image.html");
 					// get the template for the carousel indicatior tag
@@ -153,4 +197,39 @@ public class NilsHtmlEngine
 		}
 		return output;
 	}
+	
+	
+	
+	/*
+	 StringBuilder allCollections = new StringBuilder();
+		String collectionTemplate = "";
+		for(Collection col : collectionList)
+		{
+			collectionTemplate = getHtmlTemplate("admin/collection.html");
+			
+			collectionTemplate = collectionTemplate.replace("COLLECTION_TITLE", col.getTitle());
+			collectionTemplate = collectionTemplate.replace("COLLECTION_DESCRIPTION", col.getDescription());
+			collectionTemplate = collectionTemplate.replace("GALLERY_ID", col.getId().toString());
+			
+			StringBuilder imgListHtml = new StringBuilder();
+			int num = col.getNumberOfImages();
+			for(int i = 0; i < num; i++)
+			{
+				String imageTemplate = getHtmlTemplate("admin/img_div.html");
+				
+				imageTemplate = imageTemplate.replace("IMAGE_PATH", col.getImageAt(i).path);
+				imageTemplate = imageTemplate.replaceAll("IMG_ID", col.getImageAt(i).uuid.toString());
+				
+				imgListHtml = imgListHtml.append(imageTemplate);
+				
+			}
+			
+			collectionTemplate = collectionTemplate.replaceAll("IMAGES", imgListHtml.toString());
+			allCollections = allCollections.append(collectionTemplate);
+		}
+		
+		output = output.replace("COLLECTIONS", allCollections.toString());
+		
+		return output;
+	 */
 }

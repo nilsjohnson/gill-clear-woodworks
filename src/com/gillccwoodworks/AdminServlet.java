@@ -19,7 +19,7 @@ public class AdminServlet extends HttpServlet
 {
 	private static final long serialVersionUID = 1L;
 	private NilsHtmlEngine engine;
-	private ServletContext servletContext;
+
 
 	// cookies expire in 10 minutes
 	private static final int EXP_DATE = 60 * 10;
@@ -38,7 +38,6 @@ public class AdminServlet extends HttpServlet
 	{
 		// TODO Auto-generated method stub
 		super.init(config);
-		servletContext = config.getServletContext();
 		ServletContext context = this.getServletContext();
 		engine = new NilsHtmlEngine(context);
 	}
@@ -134,7 +133,8 @@ public class AdminServlet extends HttpServlet
 	private boolean isValidUser(String username, String password)
 	{
 		// only work for this hardcoded user.
-		if (!username.equals(Constants.getUsername(this.servletContext)) || !password.equals(Constants.getPassword(this.servletContext)))
+		// holy shit nils what are you doing
+		if (!username.equals(Constants.getUsername(this.getServletContext())) || !password.equals(Constants.getPassword(this.getServletContext())))
 		{
 			return false;
 		} else
