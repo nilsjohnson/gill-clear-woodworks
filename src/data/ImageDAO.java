@@ -39,10 +39,11 @@ public class ImageDAO extends DAO implements IImageDAO
 					+ " From " + CollectionTable.NAME + " INNER JOIN " + ImageTable.NAME + " ON "
 					+ CollectionTable.NAME + "." + CollectionTable.COLS.UUID 
 					+ " = " + ImageTable.NAME + "." + ImageTable.COLS.COLLECTION_UUID
-					+ " GROUP BY " + CollectionTable.NAME + "." + CollectionTable.COLS.UUID
-					+ " ORDER BY " + ImageTable.COLS.INDEX  + " ASC;";
+					+ " ORDER BY "
+					+ CollectionTable.NAME + "." + CollectionTable.COLS.TITLE + " ASC, "
+					+ CollectionTable.NAME + "." + CollectionTable.COLS.UUID  + " ASC," 
+					+ ImageTable.COLS.INDEX  + " ASC;";
 			
-			System.out.println("\n" + query);
 			
 			Statement stmt = connection.createStatement();
 			
@@ -99,7 +100,7 @@ public class ImageDAO extends DAO implements IImageDAO
 	 * @param collection 	The collection to be inserted into DB.
 	 */
 	@Override
-	public void InsertCollection(Collection collection) throws Exception
+	public void insertCollection(Collection collection) throws Exception
 	{
 		String collectionInsert = "INSERT into " + CollectionTable.NAME + " ("
 				+ CollectionTable.COLS.TITLE + ", "
@@ -153,17 +154,17 @@ public class ImageDAO extends DAO implements IImageDAO
 	 * @param path	The path of the image to remove from DB.
 	 */
 	@Override
-	public void DeleteImage(String path) throws Exception
+	public void deleteImage(UUID id) throws Exception
 	{
 		String imgDelStmt = "DELETE  FROM " + ImageTable.NAME + " WHERE "
-				+ ImageTable.COLS.PATH
+				+ ImageTable.COLS.UUID
 				+ " = ?";
 		try
 		{
 			openConnection();
 
 			PreparedStatement preparedStatement = connection.prepareStatement(imgDelStmt);
-			preparedStatement.setString(1, path);
+			preparedStatement.setString(1, id.toString());
 			preparedStatement.executeUpdate();
 			
 		}
@@ -178,7 +179,7 @@ public class ImageDAO extends DAO implements IImageDAO
 	 * @param id 	The UUID of the collection to delete.
 	 */
 	@Override
-	public void DeleteCollection(UUID id) throws Exception
+	public void deleteCollection(UUID id) throws Exception
 	{
 		try
 		{
@@ -210,24 +211,7 @@ public class ImageDAO extends DAO implements IImageDAO
 
 	@Override
 	public Collection getCollection(UUID uuid) throws Exception
-	{
-		if(uuid == null)
-		{
-			return null;
-		}
-		// NOT THIS ONE
-		String queryeeeee = "SELECT "
-				+ CollectionTable.NAME + "." + CollectionTable.COLS.UUID + ", "
-				+ CollectionTable.NAME + "." + CollectionTable.COLS.TITLE + ", "
-				+ CollectionTable.NAME + "." + CollectionTable.COLS.DESC + ", "
-				+ ImageTable.NAME + ". " + ImageTable.COLS.PATH + ", "
-				+ ImageTable.NAME + ". " + ImageTable.COLS.UUID
-				+ " From " + CollectionTable.NAME + " INNER JOIN " + ImageTable.NAME + " ON "
-				+ CollectionTable.NAME + "." + CollectionTable.COLS.UUID 
-				+ " = " + ImageTable.NAME + "." + ImageTable.COLS.COLLECTION_UUID
-				+ " ORDER BY " + ImageTable.COLS.INDEX  + " ASC";
-		
-		
+	{		
 		try
 		{
 			openConnection();
@@ -275,6 +259,80 @@ public class ImageDAO extends DAO implements IImageDAO
 				return null;
 			}
 		
+		}
+		finally
+		{
+			closeConnection();
+		}
+	}
+
+	
+	public void upldateCollectionTitle(String newTitle, UUID uuid) throws Exception
+	{
+		String update = "UPDATE "
+				+ CollectionTable.NAME 
+				+ " SET " + CollectionTable.COLS.TITLE + " = ? "
+				+ " WHERE " + CollectionTable.COLS.UUID + " = ? ";
+		
+		try
+		{
+			openConnection();
+			PreparedStatement updateStmt = connection.prepareStatement(update);
+			updateStmt.setString(1, newTitle);
+			updateStmt.setString(2, uuid.toString());
+
+			updateStmt.executeUpdate();
+		}
+		finally
+		{
+			closeConnection();
+		}
+	}
+	
+	public void upldateCollectionDesc(String newDesc, UUID uuid) throws Exception
+	{
+		String update = "UPDATE "
+				+ CollectionTable.NAME 
+				+ " SET " + CollectionTable.COLS.DESC + " = ? "
+				+ " WHERE " + CollectionTable.COLS.UUID + " = ? ";
+		
+		try
+		{
+			openConnection();
+			PreparedStatement updateStmt = connection.prepareStatement(update);
+			updateStmt.setString(1, newDesc);
+			updateStmt.setString(2, uuid.toString());
+
+			updateStmt.executeUpdate();
+		}
+		finally
+		{
+			closeConnection();
+		}
+	}
+	
+	
+	public void updateCollection(Collection col) throws Exception
+	{	
+		String imgUpdate = "UPDATE "
+				+ ImageTable.NAME 
+				+ " SET " + ImageTable.COLS.INDEX + " = ? "
+				+ " WHERE " + ImageTable.COLS.UUID + " = ? ";
+		
+		try
+		{
+			openConnection();
+			
+			for(int i = 0; i < col.getNumberOfImages(); i++)
+			{
+				
+				
+				PreparedStatement updateStmt = connection.prepareStatement(imgUpdate);
+				updateStmt.setString(1, Integer.toString(i));
+				updateStmt.setString(2, col.getImageAt(i).uuid.toString());
+				
+				updateStmt.executeUpdate();
+			}
 		}
 		finally
 		{

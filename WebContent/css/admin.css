@@ -50,3 +50,7 @@ textarea {
   padding-left: 90px; /* same size as the label elements */
 }
 
+.btn {
+    margin-bottom: 5px; 
+}
+

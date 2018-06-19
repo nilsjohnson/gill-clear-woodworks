@@ -22,7 +22,7 @@ public abstract class DAO
 		try
 		{
 			// load the driver
-			dbPath = "jdbc:sqlite:" + Constants.DB_LOCATION + Constants.DB_NAME;
+			dbPath = "jdbc:sqlite:" + Constants.HOME + Constants.DB_NAME;
 			Class.forName("org.sqlite.JDBC");
 			
 			openConnection();

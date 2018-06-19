@@ -31,9 +31,9 @@ public class DbCollectionAdder
 			Collection col2 = new Collection("Collection 2", "Desc. 2", list2);
 			Collection col3 = new Collection("Collection 3", "Desc. 3", list3);
 			
-			dao.InsertCollection(col1);
-			dao.InsertCollection(col2);
-			dao.InsertCollection(col3);
+			dao.insertCollection(col1);
+			dao.insertCollection(col2);
+			dao.insertCollection(col3);
 			
 			ArrayList<Collection> allCollections = dao.getAllCollections();
 			

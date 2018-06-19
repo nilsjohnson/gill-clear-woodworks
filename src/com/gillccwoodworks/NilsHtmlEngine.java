@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.ServletContext;
 
@@ -32,35 +33,6 @@ public class NilsHtmlEngine
 			System.out.println("DAO was not instanciated.");
 			e.printStackTrace();
 		}
-	}
-
-
-
-	/**
-	 * makes the general head that this site uses.
-	 * 
-	 * @param title
-	 *            - what goes in the browser's title bar
-	 * @param description
-	 *            - page meta content. SEO buzzwords here.
-	 * @return
-	 */
-	public String getHead(String title, String description)
-	{
-		String output = getHtmlTemplate("head.html");
-
-		output = output.replace("TITLE", title);
-		output = output.replace("DESCRIPTION", description);
-
-		return output;
-	}
-
-	/**
-	 * @return navigation bar for each page.
-	 */
-	public String getNavbar()
-	{
-		return getHtmlTemplate("navbar.html");
 	}
 
 	/**
@@ -127,12 +99,27 @@ public class NilsHtmlEngine
 			collectionTemplate = collectionTemplate.replaceAll("COLLECTION_DESCRIPTION", curCollection.getDescription());
 			collectionTemplate = collectionTemplate.replaceAll("COLLECTION_UUID", curCollection.getId().toString());
 			
+			StringBuilder stb = new StringBuilder();
+			if(IndexServlet.carouselId != null && 
+					IndexServlet.carouselId.equals(curCollection.getId()))
+			{
+				stb.append("<p>This collection the main page carousel.</p>");
+			}
+			if(GalleryServlet.getCollectionList() != null && 
+					GalleryServlet.getCollectionList().contains(curCollection.getId()))
+			{
+				stb.append("<p>This collection is on the gallery page.</p>");
+			}
+			collectionTemplate = collectionTemplate.replace("NOTES", stb.toString());
+			
+			
 			StringBuilder curCollectionAllImagesHtml = new StringBuilder();
 			for(int i = 0; i < curCollection.getNumberOfImages(); i++)
 			{
 				String imageDivHtml = getHtmlTemplate("admin/img_div.html");
 				imageDivHtml = imageDivHtml.replace("IMAGE_PATH", curCollection.getImageAt(i).path);
 				imageDivHtml = imageDivHtml.replaceAll("IMG_ID", curCollection.getImageAt(i).uuid.toString());
+				imageDivHtml = imageDivHtml.replaceAll("COLLECTION-ID", curCollection.getId().toString());
 				curCollectionAllImagesHtml = curCollectionAllImagesHtml.append(imageDivHtml);
 			}
 			
@@ -157,10 +144,12 @@ public class NilsHtmlEngine
 		StringBuilder imageHtml = new StringBuilder("");
 		try
 		{
-			Collection carouselCollection = imageDAO.getCollection(Constants.CAROUSEL_UUID);
+			
 
-			if(carouselCollection != null)
+			if(IndexServlet.getCarouselCollectionID() != null)
 			{
+				Collection carouselCollection = imageDAO.getCollection(IndexServlet.getCarouselCollectionID());
+				
 				for (int i = 0; i < carouselCollection.getNumberOfImages(); i++)
 				{
 					// get the item
@@ -184,9 +173,16 @@ public class NilsHtmlEngine
 					}
 					indicatorHtml = indicatorHtml.append(carIndicatorTag + "\n");
 				}
+				output = output.replace("INDICATORS", indicatorHtml.toString());
+				output = output.replace("IMAGES", imageHtml.toString());
 			}
-			output = output.replace("INDICATORS", indicatorHtml.toString());
-			output = output.replace("IMAGES", imageHtml.toString());
+			else
+			{
+				// so page shows without placeholders if no images present
+				output = output.replace("INDICATORS", "");
+				output = output.replace("IMAGES", "");	
+			}
+		
 
 			return output;
 		}
@@ -197,39 +193,47 @@ public class NilsHtmlEngine
 		}
 		return output;
 	}
-	
-	
-	
-	/*
-	 StringBuilder allCollections = new StringBuilder();
-		String collectionTemplate = "";
-		for(Collection col : collectionList)
+
+
+
+	public String getGallery()
+	{
+		String output = getHtmlTemplate("gallery/gallery_page.html");
+		StringBuilder collectionOutput = new StringBuilder();
+		
+		try
 		{
-			collectionTemplate = getHtmlTemplate("admin/collection.html");
-			
-			collectionTemplate = collectionTemplate.replace("COLLECTION_TITLE", col.getTitle());
-			collectionTemplate = collectionTemplate.replace("COLLECTION_DESCRIPTION", col.getDescription());
-			collectionTemplate = collectionTemplate.replace("GALLERY_ID", col.getId().toString());
-			
-			StringBuilder imgListHtml = new StringBuilder();
-			int num = col.getNumberOfImages();
-			for(int i = 0; i < num; i++)
+			ArrayList<UUID> collectionIdList = GalleryServlet.getCollectionList();
+		
+			for(UUID id : collectionIdList)
 			{
-				String imageTemplate = getHtmlTemplate("admin/img_div.html");
-				
-				imageTemplate = imageTemplate.replace("IMAGE_PATH", col.getImageAt(i).path);
-				imageTemplate = imageTemplate.replaceAll("IMG_ID", col.getImageAt(i).uuid.toString());
-				
-				imgListHtml = imgListHtml.append(imageTemplate);
-				
+				String collectionTemplate = getHtmlTemplate("gallery/collection.html");
+
+				Collection col = imageDAO.getCollection(id);
+				collectionTemplate = collectionTemplate.replace("TITLE", col.getTitle());
+				collectionTemplate = collectionTemplate.replace("DESCRIPTION", col.getDescription());
+			
+				// to hold the html for all images in this collection
+				StringBuilder imagesHtml = new StringBuilder();
+				for(int i = 0; i < col.getNumberOfImages(); i++)
+				{
+					String imgDivTemplate = getHtmlTemplate("gallery/img_div.html");
+					imgDivTemplate = imgDivTemplate.replace("IMG_SOURCE", col.getImageAt(i).path);
+					imagesHtml = imagesHtml.append(imgDivTemplate);
+				}
+				collectionTemplate = collectionTemplate.replaceAll("IMAGES", imagesHtml.toString());
+				collectionOutput = collectionOutput.append(collectionTemplate);
 			}
 			
-			collectionTemplate = collectionTemplate.replaceAll("IMAGES", imgListHtml.toString());
-			allCollections = allCollections.append(collectionTemplate);
+			
+		}
+		catch(Exception e)
+		{
+			System.out.println(e.getMessage());
 		}
 		
-		output = output.replace("COLLECTIONS", allCollections.toString());
-		
+		output = output.replaceAll("COLLECTIONS", collectionOutput.toString());
 		return output;
-	 */
+	}
+	
 }

@@ -1,7 +1,13 @@
 package com.gillccwoodworks;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -11,9 +17,17 @@ import com.amazonaws.auth.BasicAWSCredentials;
 
 public class Constants
 {
-	public static UUID CAROUSEL_UUID = UUID.fromString("9b44fe9a-790b-4438-b0ef-2b1ec9fe08b5");
 	
-	public static final String DB_LOCATION = "/home/nils/";
+	public static final String HOME = "/home/nils/";
+
+	
+
+	
+	
+	
+	public static ArrayList<UUID> galleryIds = new ArrayList<>();
+	
+
 	
 	// bucket where all images are stored
 	public final static String BUCKET_NAME = "forestfriends";

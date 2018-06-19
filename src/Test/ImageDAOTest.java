@@ -61,7 +61,7 @@ class ImageDAOTest
 		
 		try
 		{
-			imageDAO.InsertCollection(collection);
+			imageDAO.insertCollection(collection);
 		}
 		catch (Exception e)
 		{
@@ -69,19 +69,6 @@ class ImageDAOTest
 		}
 	}
 
-	@Test
-	void deleteSingleImageTest()
-	{
-		try
-		{
-			imageDAO.DeleteImage("Image_1");
-		}
-		catch(Exception e)
-		{
-			fail(e.getMessage());
-		}
-	}
-	
 	@Test
 	void testRetrievingAllCollections()
 	{

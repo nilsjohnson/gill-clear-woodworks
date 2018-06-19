@@ -110,7 +110,7 @@ public class FileUploadServlet extends HttpServlet
 			}
 			
 			Collection collection = new Collection(galleryTitle, galleryDesc, imageList);
-			imageDAO.InsertCollection(collection);
+			imageDAO.insertCollection(collection);
 	
 
 			response.sendRedirect("admin");

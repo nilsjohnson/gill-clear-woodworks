@@ -1,22 +1,109 @@
 <div class="container trans-well">
-        
-        <h1 class="my-4 text-center text-lg-center">COLLECTION_TITLE</h1>
-        <p> COLLECTION_DESCRIPTION.</p>
-        
-        <form action="delete" method="post">
-                    <button value="COLLECTION_UUID" name="gallery-delete" type="submit" class="btn btn-primary btn-lg">Delete Gallery</button>
-        </form>
+	<div class="row">
+		<div class="col-3">
+			<h4 class="text-center">Options</h4>
+			<form action="DeleteCollectionServlet" method="post">
+				<button value="COLLECTION_UUID" name="collection-id" type="submit"
+					class="btn btn-primary btn-lg btn-block">Delete All</button>
+			</form>
 
-        <form action="update" method="post">
-                    <button value="COLLECTION_UUID" name="gallery-delete" type="submit" class="btn btn-primary btn-lg">Set as Carousel</button>
-        </form>
+			<form action="SetIndexCarousel" method="post">
+				<button value="COLLECTION_UUID" name="collection-id" type="submit"
+					class="btn btn-primary btn-lg btn-block">Set as Carousel</button>
+			</form>
 
-         <form action="update" method="post">
-                    <button value="COLLECTION_UUID" name="gallery-delete" type="submit" class="btn btn-primary btn-lg">Set as Gallery</button>
-        </form>
+			<form action="PutCollectionInGalleryServlet" method="post">
+				<button value="COLLECTION_UUID" name="collection-id" type="submit"
+					class="btn btn-primary btn-lg btn-block">Put In Gallery</button>
+			</form>
 
-        <div class="row">
-            IMAGES
-        </div>
+			<form action="RemoveCollectionFromGalleryServlet" method="post">
+				<button value="COLLECTION_UUID" name="collection-id" type="submit"
+					class="btn btn-primary btn-lg btn-block">Remove From
+					Gallery</button>
+			</form>
+		</div>
+		<div class="col-9">
+			<h3 class="my-4 text-center text-lg-center">COLLECTION_TITLE</h3>
+			<h4>COLLECTION_DESCRIPTION.</h4>
+			<button type="button" class="btn btn-primary" data-toggle="modal"
+				data-target="#titleModal">Edit Title</button>
+			<button type="button" class="btn btn-primary" data-toggle="modal"
+				data-target="#descModal">Edit Description</button>
+			<p>NOTES</p>
 
-    </div>    
+
+			<!-- Title Modal -->
+			<div class="modal fade" id="titleModal" tabindex="-1" role="dialog"
+				aria-labelledby="exampleModalLabel" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="Edit" id="exampleModalLabel">Update Title</h5>
+							<button type="button" class="close" data-dismiss="modal"
+								aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+
+						<form action="UpdateTitleServlet" method="post">
+							<div class="modal-body">
+								<div>
+									<label for="gallery_title">New Title: </label>
+									 <input type="text" name="new-title" id="gallery_title" />
+									 <input type="hidden" name="collection-id" value="COLLECTION_UUID">
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+								<button type="submit">Update</button>
+							</div>
+						</form>
+
+					</div>
+				</div>
+			</div>
+			<!-- end title modal -->
+
+			<!-- Desc Modal -->
+			<div class="modal fade" id="descModal" tabindex="-1" role="dialog"
+				aria-labelledby="exampleModalLabel" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="Edit" id="exampleModalLabel">Update Description</h5>
+							<button type="button" class="close" data-dismiss="modal"
+								aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+
+						<form action="UpdateDescServlet" method="post">
+							<div class="modal-body">
+								<div>
+									<label for="collection_desc">New Description: </label>
+									<textarea name="new-desc""></textarea>	
+									<input type="hidden" name="collection-id" value="COLLECTION_UUID">
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+								<button type="submit">Update</button>
+							</div>
+						</form>
+
+					</div>
+				</div>
+			</div>
+			<!-- end title modal -->
+
+
+		</div>
+	</div>
+	<hr>
+
+	<div class="row">IMAGES</div>
+
+</div>
+
+

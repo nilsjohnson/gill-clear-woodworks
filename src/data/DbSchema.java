@@ -11,7 +11,7 @@ public class DbSchema
 		
 		public static final class COLS
 		{
-			public static final String UUID = "UUID";
+			public static final String UUID = "Img_UUID";
 			public static final String PATH = "Path";
 			public static final String INDEX = "Array_Index";
 			public static final String COLLECTION_UUID = "Collection_UUID";
@@ -26,7 +26,7 @@ public class DbSchema
 		
 		public static final class COLS
 		{
-			public static final String UUID = "UUID";
+			public static final String UUID = "Collection_UUID";
 			public static final String TITLE = "Title";
 			public static final String DESC = "Description";
 		}
