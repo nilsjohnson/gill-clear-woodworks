@@ -30,6 +30,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
+import util.FileUtil;
 import util.ImageUtil;
 import data.Collection;
 import data.Image;
@@ -84,23 +85,23 @@ public class FileUploadServlet extends HttpServlet
 			for (Part filePart : filePartList)
 			{	
 				// temp save image
-				saveFile(filePart);
+				FileUtil.saveFile(filePart);
 				
 				// load it as an image
-				BufferedImage image = ImageIO.read(new File(Constants.getHome(this.getServletContext()) + filePart.getSubmittedFileName()));
+				BufferedImage image = ImageIO.read(new File(Constants.HOME + filePart.getSubmittedFileName()));
 				// crop
 				image = ImageUtil.cropImage(image, Constants.DEFAULT_RATIO);
 				int type = image.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : image.getType();
 				// resize
 				image = ImageUtil.resizeImage(image, type, Constants.WIDTH, Constants.HEIGHT);
 				// save over original name
-				ImageUtil.writeImageToFile(image, Constants.getHome(this.getServletContext()) + filePart.getSubmittedFileName());
+				ImageUtil.writeImageToFile(image, Constants.HOME + filePart.getSubmittedFileName());
 				
 				// upload to aws  bucketfrom where it was just saved
-				upload(Constants.getHome(this.getServletContext()) + filePart.getSubmittedFileName(), filePart.getSubmittedFileName());
+				upload(Constants.HOME + filePart.getSubmittedFileName(), filePart.getSubmittedFileName());
 				
 				// delete file now that its in the aws bucket
-				deleteFile(filePart.getSubmittedFileName());
+				FileUtil.deleteFile(Constants.HOME + filePart.getSubmittedFileName());
 				
 				// add that to the list to make the gallery item
 				String imgUrl = "https://s3.amazonaws.com/" + BUCKET_NAME + "/" + filePart.getSubmittedFileName();
@@ -155,41 +156,6 @@ public class FileUploadServlet extends HttpServlet
 
 	}
 	
-	private void saveFile(Part filePart)
-	{
-		InputStream input = null;
-		FileOutputStream output = null;
-		
-		// write file to destination
-		try
-		{
-			input = filePart.getInputStream();
-			output = new FileOutputStream(Constants.getHome(this.getServletContext()) + filePart.getSubmittedFileName());
-			byte[] buf = new byte[1024];
-			int bytesRead;
-
-			while ((bytesRead = input.read(buf)) > 0)
-			{
-				output.write(buf, 0, bytesRead);
-			}
-
-			input.close();
-			output.close();
-		}
-		catch (IOException ioe)
-		{
-			ioe.printStackTrace();
-		}
-		finally
-		{
-			input = null;
-			output = null;
-		}
-	}
 	
-	private void deleteFile(String path) throws IOException
-	{
-		File file = new File(Constants.getHome(this.getServletContext()) + path);
-		Files.deleteIfExists(file.toPath());
-	}
+	
 }

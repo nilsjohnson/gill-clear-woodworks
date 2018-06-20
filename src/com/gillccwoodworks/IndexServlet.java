@@ -24,6 +24,11 @@ public class IndexServlet extends HttpServlet
 	private static final long serialVersionUID = 1L;
 	private static final String CAROUSEL_FILE_PATH = Constants.HOME + "Carousel.dat";
 	public static UUID carouselId;
+	
+	//to hold collections
+	private static final String COLLECTION_LIST_PATH = Constants.HOME + "index_collection_list.dat";
+	
+	private static ArrayList<UUID> collectionList = null;
 
 
 	public IndexServlet()
@@ -113,6 +118,102 @@ public class IndexServlet extends HttpServlet
 		        }
 		}
 		return carouselId;
+	}
+	
+	
+	public static void addCollection(UUID id)
+	{
+		if(collectionList == null)
+		{
+			loadCollectionList();
+		}
+		
+		collectionList.add(id);
+		writeCollectionList();
+	}
+	
+	/**
+	 * Removes a the id of a collection that is shown on this page.
+	 * Does nothing if the collection is not shown on page.
+	 * @param id
+	 */
+	public static void removeCollection(UUID id)
+	{
+		if(collectionList == null)
+		{
+			loadCollectionList();
+		}
+		
+		for(int i = 0; i < collectionList.size(); i++)
+		{
+			if(collectionList.get(i).equals(id))
+			{
+				collectionList.remove(i);
+			}
+		}
+		writeCollectionList();
+	}
+	
+	
+	public static ArrayList<UUID> getCollectionList()
+	{
+		if(collectionList == null)
+		{
+			loadCollectionList();
+		}
+		return collectionList;
+	
+	}
+
+	private static void writeCollectionList()
+	{
+		try
+		{
+			FileOutputStream file = new FileOutputStream(COLLECTION_LIST_PATH);
+			ObjectOutputStream out = new ObjectOutputStream(file);
+			out.writeObject(collectionList);
+			out.close();
+			file.close();
+		}
+		catch (Exception e)
+		{
+			// TODO
+			System.out.println(e.getMessage());
+		}
+		
+	}
+
+
+	
+	private static void loadCollectionList()
+	{	
+		try
+        {   
+            // Reading the object from a file
+            FileInputStream file = new FileInputStream(COLLECTION_LIST_PATH);
+            ObjectInputStream in = new ObjectInputStream(file);
+             
+            // Method for deserialization of object
+            collectionList  = (ArrayList<UUID>)in.readObject();
+             
+            in.close();
+            file.close();
+            
+        }
+         
+        catch(IOException ex)
+        {
+        	File file = new File(COLLECTION_LIST_PATH);
+			if (!file.exists())
+			{
+				collectionList = new ArrayList<>();
+			}
+		}
+         
+        catch(ClassNotFoundException ex)
+        {
+            System.out.println(ex.getMessage());
+        }
 	}
 	
 }

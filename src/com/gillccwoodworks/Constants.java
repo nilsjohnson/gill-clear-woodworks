@@ -21,14 +21,6 @@ public class Constants
 	public static final String HOME = "/home/nils/";
 
 	
-
-	
-	
-	
-	public static ArrayList<UUID> galleryIds = new ArrayList<>();
-	
-
-	
 	// bucket where all images are stored
 	public final static String BUCKET_NAME = "forestfriends";
 	public static final String DB_NAME = "gillccwoodworks.db";
@@ -39,10 +31,6 @@ public class Constants
 	public static int HEIGHT = 800;
 	public static double DEFAULT_RATIO = (double)WIDTH/(double)HEIGHT;
 	
-	public static String getHome(ServletContext context)
-	{
-		return  context.getRealPath("/") + "WEB-INF/";
-	}
 	
 	public static BasicAWSCredentials getAwsCreds(ServletContext context)
 	{
@@ -57,7 +45,7 @@ public class Constants
 		String path = context.getRealPath("/") + "WEB-INF/" + "aws_cred.txt";
 
 		File file = new File(path);
-		System.out.print(file.getAbsolutePath());
+
 		try
 		{
 			Scanner scanner = new Scanner(file);
@@ -85,7 +73,7 @@ public class Constants
 		String username = null;
 		
 		File file = new File(path);
-		System.out.print(file.getAbsolutePath());
+
 		try
 		{
 			Scanner scanner = new Scanner(file);
@@ -107,7 +95,7 @@ public class Constants
 		String password = null;
 		
 		File file = new File(path);
-		System.out.print(file.getAbsolutePath());
+
 		try
 		{
 			Scanner scanner = new Scanner(file);
