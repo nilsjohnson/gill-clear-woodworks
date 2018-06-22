@@ -71,7 +71,7 @@ public class NilsHtmlEngine
 	/**
 	 * @return the html for FileUploadServlet.java
 	 */
-	public String getUploadPage()
+	public String getAdminPage()
 	{
 		// outermost template
 		String output = getHtmlTemplate("admin/admin_body.html");
@@ -88,8 +88,6 @@ public class NilsHtmlEngine
 		}
 		
 		StringBuilder allCollectionsHtml = new StringBuilder();
-		
-		System.out.println("number of collections: " + collectionList.size());
 		
 		for(Collection curCollection : collectionList)
 		{

@@ -340,4 +340,39 @@ public class ImageDAO extends DAO implements IImageDAO
 		}
 	}
 
+	public void addImage(UUID uuid, String imgUrl)
+	{
+		String imgInsert = "INSERT  into " + ImageTable.NAME + " ("
+				+ ImageTable.COLS.UUID + ", "
+				+ ImageTable.COLS.PATH + ", "
+				+ ImageTable.COLS.INDEX + ", "
+				+ ImageTable.COLS.COLLECTION_UUID + ") "
+				+ "VALUES ( ?, ?, ?, ?)";
+		
+		try
+		{
+			openConnection();
+			
+			PreparedStatement stmt = connection.prepareStatement(imgInsert);
+			
+			stmt.setString(1, UUID.randomUUID().toString());
+			stmt.setString(2, imgUrl);
+			// set to index -1 so it appears at front of list
+			stmt.setString(3, "-1");
+			stmt.setString(4, uuid.toString());
+			
+			stmt.executeUpdate();
+			
+			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			closeConnection();
+		}	
+	}
+
 }

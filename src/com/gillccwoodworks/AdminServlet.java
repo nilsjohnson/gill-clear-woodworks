@@ -125,7 +125,7 @@ public class AdminServlet extends HttpServlet
 			response.addCookie(passwordCookie);
 		}
 
-		String uploadHtml = engine.getUploadPage();
+		String uploadHtml = engine.getAdminPage();
 
 		response.getWriter().append(uploadHtml);
 	}

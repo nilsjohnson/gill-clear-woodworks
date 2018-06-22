@@ -1,11 +1,8 @@
 <div class="container trans-well">
 	<div class="row">
-		<div class="col-3">
-			<h4 class="text-center">Options</h4>
-			<form action="DeleteCollectionServlet" method="post">
-				<button value="COLLECTION_UUID" name="collection-id" type="submit"
-					class="btn btn-primary btn-lg btn-block">Delete All</button>
-			</form>
+		<div class="col-4">
+			<h4 class="text-center">Image Locations</h4>
+
 
 			<form action="SetIndexCarousel" method="post">
 				<button value="COLLECTION_UUID" name="collection-id" type="submit"
@@ -16,35 +13,71 @@
 				<button value="COLLECTION_UUID" name="collection-id" type="submit"
 					class="btn btn-primary btn-lg btn-block">Put In Gallery</button>
 			</form>
-
-			<form action="RemoveCollectionFromGalleryServlet" method="post">
-				<button value="COLLECTION_UUID" name="collection-id" type="submit"
-					class="btn btn-primary btn-lg btn-block">Remove From
-					Gallery</button>
-			</form>
 			
 			<form action="PutCollectionInIndexServlet" method="post">
 				<button value="COLLECTION_UUID" name="collection-id" type="submit"
 					class="btn btn-primary btn-lg btn-block">Put On Homepage</button>
 			</form>
-			<form action="RemoveCollectionFromIndexServlet" method="post">
+
+			<form action="RemoveCollectionFromGalleryServlet" method="post">
 				<button value="COLLECTION_UUID" name="collection-id" type="submit"
-					class="btn btn-primary btn-lg btn-block">Remove From Homepage</button>
+					class="btn btn-warning btn-lg btn-block">Remove From
+					Gallery</button>
 			</form>
 			
+			<form action="RemoveCollectionFromIndexServlet" method="post">
+				<button value="COLLECTION_UUID" name="collection-id" type="submit"
+					class="btn btn-warning btn-lg btn-block">Remove From
+					Homepage</button>
+			</form>
+
+			<form action="DeleteCollectionServlet" method="post">
+				<button value="COLLECTION_UUID" name="collection-id" type="submit"
+					class="btn btn-danger btn-lg btn-block">Delete This Collection</button>
+			</form>
+
+
 		</div>
-		<div class="col-9">
-			<h3 class="my-4 text-center text-lg-center">COLLECTION_TITLE</h3>
-			<h4>COLLECTION_DESCRIPTION.</h4>
-			<button type="button" class="btn btn-primary" data-toggle="modal"
-				data-target="#titleModal">Edit Title</button>
-			<button type="button" class="btn btn-primary" data-toggle="modal"
-				data-target="#descModal">Edit Description</button>
-			<p>NOTES</p>
+		<div class="col-8">
+
+			<div class="row">
+				
+				<div class="col-6">
+					<h3 class="my-4 text-center text-lg-center">COLLECTION_TITLE</h3>
+					<h4>COLLECTION_DESCRIPTION</h4>
+
+					<hr>
+
+					<button type="button" class="btn btn-primary" data-toggle="modal"
+						data-target="#COLLECTION_UUID-titleModal">Edit Title</button>
+					<button type="button" class="btn btn-primary" data-toggle="modal"
+						data-target="#COLLECTION_UUID-descModal">Edit Description</button>
+
+
+
+					<hr>
+					<p>NOTES</p>
+				</div>
+
+				<div class="col-6">
+					<form action="AddImagesServlet" method="post" enctype="multipart/form-data"
+						id="upload-form">
+
+						<!-- 'Browse..' button element -->
+						<input type="file" name="file" multiple="multiple"
+							id="file_select" />
+
+						<input type="hidden"  value="COLLECTION_UUID" name="collection-id" />
+						
+						<button type="submit">Upload</button>
+
+					</form>
+				</div>
+			</div>
 
 
 			<!-- Title Modal -->
-			<div class="modal fade" id="titleModal" tabindex="-1" role="dialog"
+			<div class="modal fade" id="COLLECTION_UUID-titleModal" tabindex="-1" role="dialog"
 				aria-labelledby="exampleModalLabel" aria-hidden="true">
 				<div class="modal-dialog" role="document">
 					<div class="modal-content">
@@ -60,7 +93,7 @@
 							<div class="modal-body">
 								<div>
 									<label for="gallery_title">New Title: </label>
-									 <input type="text" name="new-title" id="gallery_title" />
+									 <input type="text" name="new-title" id="gallery_title" value="COLLECTION_TITLE" />
 									 <input type="hidden" name="collection-id" value="COLLECTION_UUID">
 								</div>
 							</div>
@@ -76,7 +109,7 @@
 			<!-- end title modal -->
 
 			<!-- Desc Modal -->
-			<div class="modal fade" id="descModal" tabindex="-1" role="dialog"
+			<div class="modal fade" id="COLLECTION_UUID-descModal" tabindex="-1" role="dialog"
 				aria-labelledby="exampleModalLabel" aria-hidden="true">
 				<div class="modal-dialog" role="document">
 					<div class="modal-content">
@@ -92,7 +125,7 @@
 							<div class="modal-body">
 								<div>
 									<label for="collection_desc">New Description: </label>
-									<textarea name="new-desc""></textarea>	
+									<textarea name="new-desc"">COLLECTION_DESCRIPTION</textarea>	
 									<input type="hidden" name="collection-id" value="COLLECTION_UUID">
 								</div>
 							</div>

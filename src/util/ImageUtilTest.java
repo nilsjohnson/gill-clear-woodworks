@@ -6,14 +6,18 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import com.gillccwoodworks.Constants;
+
 public class ImageUtilTest
 {
 	
 	public static void main(String[] args)
 	{
-		double ratio = (double)3.0/2.0;
-		String path = "/no_upload.png";
-		String outputPath = "/no_upload.png";
+		double ratio = Constants.DEFAULT_RATIO;
+		
+		//double ratio = (double)3.0/2.0;
+		String path = "/home/nils/problem_images/portrait.jpg";
+		String outputPath = "/home/nils/problem_images/portrait_resized.jpg";
 		
 		try
 		{

@@ -34,9 +34,7 @@ public class ImageUtil
 		}
 		// this means we chop off the sides
 		else if (imageRatio > ratio)
-		{
-			System.out.println("Image Ratio: " + imageRatio +" - This image is too wide, cropping off sides");
-			
+		{	
 			double targetWidth = imgHeight*1.0/ratio;
 			double x = ((imgWidth-targetWidth)/2);
 			return image.getSubimage((int) x, 0, (int)targetWidth, imgHeight);
