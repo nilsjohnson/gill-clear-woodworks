@@ -195,8 +195,12 @@ public class NilsHtmlEngine
 			
 			for(UUID id : collectionIdList)
 			{
-				String collectionTemplate = getHtmlTemplate("index/collection_body.html");
 				Collection col = imageDAO.getCollection(id);
+				System.out.println("This collection is called: " + col.getTitle());
+				System.out.println("Desc: " + col.getDescription());
+			
+				String collectionTemplate = getHtmlTemplate("index/collection_body.html");
+				
 				collectionTemplate = collectionTemplate.replace("TITLE", col.getTitle());
 				collectionTemplate = collectionTemplate.replace("DESCRIPTION", col.getDescription());
 				collectionTemplate = collectionTemplate.replace("MAIN_ID", col.getId().toString());

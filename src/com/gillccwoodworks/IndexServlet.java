@@ -86,37 +86,36 @@ public class IndexServlet extends HttpServlet
 		}
 		else
 		{
-			
-			 try
-		        {   
-		            // Reading the object from a file
-		            FileInputStream file = new FileInputStream(CAROUSEL_FILE_PATH);
-		            ObjectInputStream in = new ObjectInputStream(file);
-		             
-		            // Method for deserialization of object
-		            UUID id = (UUID)in.readObject();
-		             
-		            in.close();
-		            file.close();
-		            
-		            carouselId = id;
-		     
-		        }
-		         
-		        catch(IOException ex)
-		        {
-		        	File file = new File(CAROUSEL_FILE_PATH);
-					if (!file.exists())
-					{
-						System.out.println("Unable to load carousuel id. File does not exist.");
-					}
-		        }
-		         
-		        catch(ClassNotFoundException ex)
-		        {
-		            System.out.println(ex.getMessage());
-		        }
+			try
+	        {   
+	            // Reading the object from a file
+	            FileInputStream file = new FileInputStream(CAROUSEL_FILE_PATH);
+	            ObjectInputStream in = new ObjectInputStream(file);
+	             
+	            // Method for deserialization of object
+	            UUID id = (UUID)in.readObject();
+	             
+	            in.close();
+	            file.close();
+	            
+	            carouselId = id;
+	        }
+	         
+	        catch(IOException ex)
+	        {
+	        	File file = new File(CAROUSEL_FILE_PATH);
+				if (!file.exists())
+				{
+					System.out.println("Unable to load carousuel id. File does not exist.");
+				}
+	        }
+	         
+	        catch(ClassNotFoundException ex)
+	        {
+	            System.out.println(ex.getMessage());
+	        }
 		}
+
 		return carouselId;
 	}
 	
@@ -151,18 +150,21 @@ public class IndexServlet extends HttpServlet
 				collectionList.remove(i);
 			}
 		}
+
 		writeCollectionList();
 	}
 	
-	
+	/**
+	 * @return a list of UUIDs of collections that appear on home page. Returns empty list there are none. 
+	 */
 	public static ArrayList<UUID> getCollectionList()
 	{
 		if(collectionList == null)
 		{
 			loadCollectionList();
 		}
+
 		return collectionList;
-	
 	}
 
 	private static void writeCollectionList()
@@ -182,8 +184,6 @@ public class IndexServlet extends HttpServlet
 		}
 		
 	}
-
-
 	
 	private static void loadCollectionList()
 	{	

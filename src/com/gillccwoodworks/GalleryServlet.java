@@ -116,6 +116,7 @@ public class GalleryServlet extends HttpServlet
 
 
 	
+	@SuppressWarnings("unchecked")
 	private static void loadCollectionList()
 	{	
 		try

@@ -18,8 +18,8 @@ import com.amazonaws.auth.BasicAWSCredentials;
 public class Constants
 {
 	
-	public static final String HOME = "/home/nils/";
-	//public static final String HOME = "/home/ubuntu/";
+	//public static final String HOME = "/home/nils/";
+	public static final String HOME = "/home/ubuntu/";
 	
 	// bucket where all images are stored
 	public final static String BUCKET_NAME = "forestfriends";
