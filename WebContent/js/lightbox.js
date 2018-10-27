@@ -2,7 +2,7 @@
 class LightBox 
 {
 	/*
-		locations: array of image address
+		locations: array of image addresses
 		modalId: the id of the image tag in the modal
 	*/
 	constructor(locations, modalId)

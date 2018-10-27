@@ -209,31 +209,7 @@ public class ImageDAO extends DAO implements IImageDAO
 			closeConnection();
 		}
 	}
-	
-	public List<String> getUUIDs() throws Exception
-	{
-		List<String> resultSet = new ArrayList<String>();
 
-		try {
-			openConnection();
-			String query = "Select " + CollectionTable.COLS.UUID + " from " + CollectionTable.NAME;
-
-			Statement stmt = connection.createStatement();
-			
-			ResultSet rSet = stmt.executeQuery(query);	
-			
-			while(rSet.next())
-			{
-				resultSet.add(rSet.getString(CollectionTable.COLS.UUID));
-			}
-		}
-		finally
-		{
-			closeConnection();
-		}
-
-		return resultSet;
-	}
 
 	@Override
 	public Collection getCollection(UUID uuid) throws Exception

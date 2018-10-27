@@ -195,31 +195,39 @@ public class NilsHtmlEngine
 			
 			for(UUID id : collectionIdList)
 			{
-				Collection col = imageDAO.getCollection(id);
-				System.out.println("This collection is called: " + col.getTitle());
-				System.out.println("Desc: " + col.getDescription());
-			
-				String collectionTemplate = getHtmlTemplate("index/collection_body.html");
-				
-				collectionTemplate = collectionTemplate.replace("TITLE", col.getTitle());
-				collectionTemplate = collectionTemplate.replace("DESCRIPTION", col.getDescription());
-				collectionTemplate = collectionTemplate.replace("MAIN_ID", col.getId().toString());
-				if(col.getNumberOfImages() > 0)
+				try
 				{
-					collectionTemplate = collectionTemplate.replace("IMG_SRC", col.getImageAt(0).path);
-				}
+					Collection col = imageDAO.getCollection(id);
+					System.out.println("This collection is called: " + col.getTitle());
+					System.out.println("Desc: " + col.getDescription());
 				
-				StringBuilder imagesHtml = new StringBuilder();
-				for(int i = 0; i < col.getNumberOfImages(); i++)
-				{
-					String imageDivTemplate = getHtmlTemplate("index/img_div.html");
-					imageDivTemplate = imageDivTemplate.replace("IMG_SOURCE", col.getImageAt(i).path);
-					imageDivTemplate = imageDivTemplate.replace("MAIN_ID", col.getId().toString());
-					imagesHtml = imagesHtml.append(imageDivTemplate);
+					String collectionTemplate = getHtmlTemplate("index/collection_body.html");
+					
+					collectionTemplate = collectionTemplate.replace("TITLE", col.getTitle());
+					collectionTemplate = collectionTemplate.replace("DESCRIPTION", col.getDescription());
+					collectionTemplate = collectionTemplate.replace("MAIN_ID", col.getId().toString());
+					if(col.getNumberOfImages() > 0)
+					{
+						collectionTemplate = collectionTemplate.replace("IMG_SRC", col.getImageAt(0).path);
+					}
+					
+					StringBuilder imagesHtml = new StringBuilder();
+					for(int i = 0; i < col.getNumberOfImages(); i++)
+					{
+						String imageDivTemplate = getHtmlTemplate("index/img_div.html");
+						imageDivTemplate = imageDivTemplate.replace("IMG_SOURCE", col.getImageAt(i).path);
+						imageDivTemplate = imageDivTemplate.replace("MAIN_ID", col.getId().toString());
+						imagesHtml = imagesHtml.append(imageDivTemplate);
+					}
+					
+					collectionTemplate = collectionTemplate.replace("IMAGES", imagesHtml.toString());
+					collectionOutput = collectionOutput.append(collectionTemplate);
+	
 				}
-				
-				collectionTemplate = collectionTemplate.replace("IMAGES", imagesHtml.toString());
-				collectionOutput = collectionOutput.append(collectionTemplate);
+				catch (Exception e) {
+					System.out.println("Error fetching collection with id " + id.toString());
+					e.printStackTrace();
+				}
 			}
 		
 			output = output.replace("COLLECTIONS", collectionOutput.toString());
