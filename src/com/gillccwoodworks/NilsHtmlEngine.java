@@ -2,18 +2,11 @@ package com.gillccwoodworks;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
-
 import javax.servlet.ServletContext;
-
 import data.Collection;
-import data.Image;
 import data.ImageDAO;
 
 public class NilsHtmlEngine
@@ -37,14 +30,12 @@ public class NilsHtmlEngine
 
 	/**
 	 * 
-	 * @param fileName
-	 *            - name of the html template file.
-	 * @return string containing the html in that file.
+	 * @param fileName  name of the html template file.
+	 * @return output   string containing the html in that file.
 	 */
 	public String getHtmlTemplate(String fileName)
 	{
 		String output = null;
-
 		String path = servletPath + "WEB-INF/html/" + fileName;
 
 		try (BufferedReader br = new BufferedReader(new FileReader(path)))
@@ -144,17 +135,20 @@ public class NilsHtmlEngine
 	 */
 	public String getHomePage()
 	{
+		// primary page output
 		String output = getHtmlTemplate("index/index.html");
+
+		// for the carousel
 		StringBuilder indicatorHtml = new StringBuilder("");
 		StringBuilder imageHtml = new StringBuilder("");
-		try
+
+		// setup the carousel, if there is one
+		if (IndexServlet.getCarouselCollectionID() != null)
 		{
-			
-			// setup the carousel
-			if(IndexServlet.getCarouselCollectionID() != null)
+			try
 			{
 				Collection carouselCollection = imageDAO.getCollection(IndexServlet.getCarouselCollectionID());
-				
+
 				for (int i = 0; i < carouselCollection.getNumberOfImages(); i++)
 				{
 					// get the item
@@ -178,69 +172,67 @@ public class NilsHtmlEngine
 					}
 					indicatorHtml = indicatorHtml.append(carIndicatorTag + "\n");
 				}
-				output = output.replace("INDICATORS", indicatorHtml.toString());
-				output = output.replace("IMAGES", imageHtml.toString());
 			}
-			else
+			catch (Exception e)
 			{
-				// so page shows without placeholders if no images present
-				output = output.replace("INDICATORS", "");
-				output = output.replace("IMAGES", "");	
+				System.out.println("problem generating the carousel: " + e.getMessage());
+				e.printStackTrace();
 			}
-			// setup the collections
 			
-			ArrayList<UUID> collectionIdList = IndexServlet.getCollectionList();
-			
-			StringBuilder collectionOutput = new StringBuilder();
-			
-			for(UUID id : collectionIdList)
-			{
-				try
-				{
-					Collection col = imageDAO.getCollection(id);
-					System.out.println("This collection is called: " + col.getTitle());
-					System.out.println("Desc: " + col.getDescription());
-				
-					String collectionTemplate = getHtmlTemplate("index/collection_body.html");
-					
-					collectionTemplate = collectionTemplate.replace("TITLE", col.getTitle());
-					collectionTemplate = collectionTemplate.replace("DESCRIPTION", col.getDescription());
-					collectionTemplate = collectionTemplate.replace("MAIN_ID", col.getId().toString());
-					if(col.getNumberOfImages() > 0)
-					{
-						collectionTemplate = collectionTemplate.replace("IMG_SRC", col.getImageAt(0).path);
-					}
-					
-					StringBuilder imagesHtml = new StringBuilder();
-					for(int i = 0; i < col.getNumberOfImages(); i++)
-					{
-						String imageDivTemplate = getHtmlTemplate("index/img_div.html");
-						imageDivTemplate = imageDivTemplate.replace("IMG_SOURCE", col.getImageAt(i).path);
-						imageDivTemplate = imageDivTemplate.replace("MAIN_ID", col.getId().toString());
-						imagesHtml = imagesHtml.append(imageDivTemplate);
-					}
-					
-					collectionTemplate = collectionTemplate.replace("IMAGES", imagesHtml.toString());
-					collectionOutput = collectionOutput.append(collectionTemplate);
-	
-				}
-				catch (Exception e) {
-					System.out.println("Error fetching collection with id " + id.toString());
-					e.printStackTrace();
-				}
-			}
-		
-			output = output.replace("COLLECTIONS", collectionOutput.toString());
-			return output;
+			output = output.replace("INDICATORS", indicatorHtml.toString());
+			output = output.replace("IMAGES", imageHtml.toString());
 		}
-		catch (Exception e)
+		// otherwise set the html to be empty
+		else
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			output = output.replace("INDICATORS", "");
+			output = output.replace("IMAGES", "");
 		}
-		return output;
-	}
 
+		// setup the collections
+		ArrayList<UUID> collectionIdList = IndexServlet.getCollectionList();
+		StringBuilder collectionOutput = new StringBuilder();
+
+		for (UUID id : collectionIdList)
+		{
+			try
+			{
+				Collection col = imageDAO.getCollection(id);
+
+				String collectionTemplate = getHtmlTemplate("index/collection_body.html");
+
+				collectionTemplate = collectionTemplate.replace("TITLE", col.getTitle());
+				collectionTemplate = collectionTemplate.replace("DESCRIPTION", col.getDescription());
+				collectionTemplate = collectionTemplate.replace("MAIN_ID", col.getId().toString());
+				if (col.getNumberOfImages() > 0)
+				{
+					collectionTemplate = collectionTemplate.replace("IMG_SRC", col.getImageAt(0).path);
+				}
+
+				StringBuilder imagesHtml = new StringBuilder();
+				for (int i = 0; i < col.getNumberOfImages(); i++)
+				{
+					String imageDivTemplate = getHtmlTemplate("index/img_div.html");
+					imageDivTemplate = imageDivTemplate.replace("IMG_SOURCE", col.getImageAt(i).path);
+					imageDivTemplate = imageDivTemplate.replace("MAIN_ID", col.getId().toString());
+					imagesHtml = imagesHtml.append(imageDivTemplate);
+				}
+
+				collectionTemplate = collectionTemplate.replace("IMAGES", imagesHtml.toString());
+				collectionOutput = collectionOutput.append(collectionTemplate);
+
+			}
+			catch (Exception e)
+			{
+				System.out.println("Error fetching collection with id " + id.toString());
+				e.printStackTrace();
+			}
+		}
+
+		output = output.replace("COLLECTIONS", collectionOutput.toString());
+		return output;
+
+	}
 
 
 	public String getGallery()

@@ -109,7 +109,6 @@ public class IndexServlet extends HttpServlet
 					System.out.println("Unable to load carousuel id. File does not exist.");
 				}
 	        }
-	         
 	        catch(ClassNotFoundException ex)
 	        {
 	            System.out.println(ex.getMessage());
@@ -185,6 +184,7 @@ public class IndexServlet extends HttpServlet
 		
 	}
 	
+	@SuppressWarnings({ "unchecked" })
 	private static void loadCollectionList()
 	{	
 		try
@@ -195,12 +195,10 @@ public class IndexServlet extends HttpServlet
              
             // Method for deserialization of object
             collectionList  = (ArrayList<UUID>)in.readObject();
-             
             in.close();
             file.close();
             
         }
-         
         catch(IOException ex)
         {
         	File file = new File(COLLECTION_LIST_PATH);
@@ -209,7 +207,6 @@ public class IndexServlet extends HttpServlet
 				collectionList = new ArrayList<>();
 			}
 		}
-         
         catch(ClassNotFoundException ex)
         {
             System.out.println(ex.getMessage());
