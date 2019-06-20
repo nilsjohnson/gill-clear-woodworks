@@ -1,5 +1,2 @@
 build/
-WebContent/WEB-INF/aws_cred.txt
-WebContent/WEB-INF/lib/
-WebContent/WEB-INF/password.txt
-WebContent/WEB-INF/username.txt
+node_modules/
