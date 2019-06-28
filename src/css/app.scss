@@ -1,0 +1,39 @@
+@import '~bootstrap/scss/bootstrap';
+
+html {
+    height: 100%;
+    box-sizing: border-box;
+  }
+
+body {
+    padding-bottom: 6rem; /*allow footer to always bet on bottom, but not fixed*/
+    position: relative; /*allow footer to always bet on bottom, but not fixed*/
+    min-height: 100%;
+}
+
+#carousel {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.social-link {
+    margin: .5rem;
+}
+
+.footer {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    padding: 1rem;
+}
+
+.active {
+    font-weight: bold;
+}
+
+.box {
+    padding: .5rem;
+    margin: .5rem;
+}
