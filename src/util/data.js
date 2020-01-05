@@ -1,7 +1,7 @@
 /*
 For blogger API
 */
-const key = "";
+const key = "AIzaSyDyOzcQFTCjSmlT-nd5rbLXLca3glNkZhg";
 // use google id for testing: 3213900
 const userId = "4537747483030928219";
 
