@@ -15,7 +15,6 @@ class SocialBar extends Component {
                     <a href="https://www.facebook.com/gillccwoodworks/" className="social-link">
                         <img src={Facebook} />
                     </a>
-
                 </div>
             </div>
         );

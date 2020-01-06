@@ -17,6 +17,8 @@ else {
 const express = require('express');
 const path = require('path');
 const app = express();
+const fs = require('fs');
+const https = require('https');
 
 const HTTP_PORT_NUM = 3000;
 const HTTPS_PORT_NUM = 443;
@@ -52,7 +54,10 @@ app.get('/*', function(req, res) {
 				res.sendFile(path.join(__dirname, '../public', 'index.html'));
 			}
     }
-  	res.sendFile(path.join(__dirname, '../public', 'index.html'));
+    else {
+      res.sendFile(path.join(__dirname, '../public', 'index.html'));
+    }
+  	
 });
 
 

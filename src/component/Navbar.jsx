@@ -8,7 +8,7 @@ class Navbar extends Component {
                 <h5 className="my-0 mr-md-auto font-weight-normal">Gill Country Clear Woodworks</h5>
                 <nav className="my-2 my-md-0 mr-md-3">
                     <a className={this.props.activePage === "home" ? "p-2 text-dark active" : "p-2 text-dark"} href="/">Home</a>
-                    <a className={this.props.activePage === "blog" ? "p-2 text-dark active" : "p-2 text-dark"} href="/woodshop">The Shop</a>
+                    <a className={this.props.activePage === "blog" ? "p-2 text-dark active" : "p-2 text-dark"} href="/woodshop">Portfolio</a>
                    {/*  <a className={this.props.activePage === "gallery" ? "p-2 text-dark active" : "p-2 text-dark"} href="gallery">Gallery</a>
                     <a className={this.props.activePage === "about" ? "p-2 text-dark active" : "p-2 text-dark"} href="about">About</a> */}
                 </nav>
