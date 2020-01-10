@@ -23,7 +23,10 @@ class BlogHeader extends Component {
       <div className="box">
         <div className="row">
           <div className="col-md-4">
-            <img src={this.getImage()} className="img-fluid thumbnail"/>
+            <Link to={{
+                   pathname: '/woodshop',
+                   search: '?post=' + this.props.post.id
+                }}><img src={this.getImage()} className="img-fluid thumbnail"/></Link>
           </div>
           <div className="col-md-8">
           <Link to={{
