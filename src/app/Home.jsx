@@ -16,19 +16,15 @@ class Home extends Component {
 					<div className="col-xl-8">
 						<CarouselWrapper
 							images={[
-								"https://s3.amazonaws.com/forestfriends/November2017-53.jpg", 
-								"https://s3.amazonaws.com/forestfriends/TablesJanuary-57.jpg",
-								"https://s3.amazonaws.com/forestfriends/IMG_0102.JPG",
-								"https://s3.amazonaws.com/forestfriends/TablesJanuary-66.jpg",
-								"https://s3.amazonaws.com/forestfriends/bed frame_505.JPG",
-								"https://s3.amazonaws.com/forestfriends/birch table_656.JPG",
-								"https://s3.amazonaws.com/forestfriends/boston table_797.JPG",
-								"https://s3.amazonaws.com/forestfriends/trestle desk_408.JPG",
-								"https://s3.amazonaws.com/forestfriends/trestle desk_400.JPG",
-								"https://s3.amazonaws.com/forestfriends/Leftys-62.jpg",
-								"https://s3.amazonaws.com/forestfriends/daybed_762.JPG",
-								"https://s3.amazonaws.com/forestfriends/dining table.jpg",
-								"https://s3.amazonaws.com/forestfriends/maple_table_one.jpg"]}
+								"/img/one.jpg",
+								"/img/two.jpg",
+								"/img/three.jpg",
+								"/img/four.jpg",
+								"/img/five.jpg",
+								"/img/six.jpg",
+								"/img/seven.jpg",
+								"/img/eight.jpg",
+								"/img/ten.jpg"]}
 						/>
 					</div>
 					<div className="col-xl-4">
