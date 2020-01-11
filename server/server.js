@@ -51,13 +51,17 @@ app.get('/*', function (req, res) {
 			// good
 			res.sendFile(path.join(__dirname, '../public', 'index.html'));
 		}
-		else if(!hasSubDomain) {
+		else if(secure && !hasSubDomain) {
 			// needs to be redirected to subdomain
-			res.redirect("https://www.") + req.headers.host + req.url;
+			res.redirect("https://www." + req.headers.host + req.url);
 		}
 		else if(!secure && hasSubDomain) {
+			// needs to be redirected securely to subdomain
+			res.redirect("https://" + req.headers.host + req.url);
+		}
+		else if(!secure && !hasSubDomain) {
 			// needs to be redirected to https
-			res.redirect("https://") + req.headers.host + req.url;
+			res.redirect("https://www" + req.headers.host + req.url);
 		}
 	}
 	else {
