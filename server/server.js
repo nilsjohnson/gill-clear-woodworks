@@ -37,35 +37,41 @@ if (mode == PRODUCTION) {
 	};
 }
 
-app.use(express.static(path.join(__dirname, '../build'), { index : false })); // index : false is to allow request for the webroot to get caught by 'app.get('/*', function(req, res)', allowing http to https redirects
-app.use(express.static(path.join(__dirname, '../public'), { index : false })); 
+app.use(express.static(path.join(__dirname, '../build'), { index: false })); // index : false is to allow request for the webroot to get caught by 'app.get('/*', function(req, res)', allowing http to https redirects
+app.use(express.static(path.join(__dirname, '../public'), { index: false }));
 
 
 
-app.get('/*', function(req, res) {
-    if(mode === PRODUCTION) {
-      if(!req.secure){
-				res.redirect("https://" + req.headers.host + req.url);
-			}
-			else if(!req.headers.host.startsWith("www")){
-				res.redirect("https://www." + req.headers.host + req.url);
-			}
-			else {
-				res.sendFile(path.join(__dirname, '../public', 'index.html'));
-			}
-    }
-    else {
-      res.sendFile(path.join(__dirname, '../public', 'index.html'));
-    }
-  	
+app.get('/*', function (req, res) {
+	if (mode === PRODUCTION) {
+		let secure = req.secure;
+		let hasSubDomain = req.headers.host.startsWith("www");
+
+		if(secure && hasSubDomain) {
+			// good
+			res.sendFile(path.join(__dirname, '../public', 'index.html'));
+		}
+		else if(!hasSubDomain) {
+			// needs to be redirected to subdomain
+			res.redirect("https://www.") + req.headers.host + req.url;
+		}
+		else if(!secure && hasSubDomain) {
+			// needs to be redirected to https
+			res.redirect("https://") + req.headers.host + req.url;
+		}
+	}
+	else {
+		res.sendFile(path.join(__dirname, '../public', 'index.html'));
+	}
+
 });
 
 
 /*
 Starts server
 */
-app.listen(HTTP_PORT_NUM, function() {
-  console.log('Listening on port 3000 for requests');
+app.listen(HTTP_PORT_NUM, function () {
+	console.log('Listening on port 3000 for requests');
 });
 
 /*

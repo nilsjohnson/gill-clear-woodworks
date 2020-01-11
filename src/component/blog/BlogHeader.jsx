@@ -32,8 +32,8 @@ class BlogHeader extends Component {
           <Link to={{
                    pathname: '/woodshop',
                    search: '?post=' + this.props.post.id
-                }}><h3 className="text-center">{this.props.post.title}</h3></Link>
-            <h4>{toReadable(this.props.post.published)}</h4>
+                }}><h4 className="text-center">{this.props.post.title}</h4></Link>
+            <div>{toReadable(this.props.post.published)}</div>
           </div>
         </div>
         <hr/>
