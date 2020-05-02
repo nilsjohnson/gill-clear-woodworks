@@ -16,6 +16,8 @@ class Home extends Component {
 					<div className="col-xl-8">
 						<CarouselWrapper
 							images={[
+								"/img/eleven.jpg",
+								"/img/twelve.jpg",
 								"/img/one.jpg",
 								"/img/two.jpg",
 								"/img/three.jpg",
@@ -24,7 +26,9 @@ class Home extends Component {
 								"/img/six.jpg",
 								"/img/seven.jpg",
 								"/img/eight.jpg",
-								"/img/ten.jpg"]}
+								"/img/ten.jpg",
+								"/img/thirteen.jpg",
+								"/img/fourteen.jpg"]}
 						/>
 					</div>
 					<div className="col-xl-4">
