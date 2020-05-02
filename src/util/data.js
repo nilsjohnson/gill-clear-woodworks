@@ -28,4 +28,9 @@ function getPostById(postId) {
 	return fetch('https://www.googleapis.com/blogger/v3/blogs/' + userId + '/posts/' + postId + '?key=' +key);
 }
 
-export { getLatest, getPostById };
+function getAbout()
+{
+	return fetch('/about');
+}
+
+export { getLatest, getPostById, getAbout };

@@ -3,7 +3,8 @@ If running in production on server, pass 'prudction' as an argument:
 	$ node server.js production
 This will allow listening for https requests, otherwise it will just do http.	
 */
-const PRODUCTION = "A unique String! :)";
+const PRODUCTION = 1;
+const DEV = 0;
 let mode;
 
 if (process.argv.length > 2 && process.argv[2] === "production") {
@@ -11,6 +12,7 @@ if (process.argv.length > 2 && process.argv[2] === "production") {
 	mode = PRODUCTION;
 }
 else {
+	mode = DEV;
 	console.log("Server running in DEV mode. Will not listen for https requests");
 }
 
@@ -40,7 +42,10 @@ if (mode == PRODUCTION) {
 app.use(express.static(path.join(__dirname, '../build'), { index: false })); // index : false is to allow request for the webroot to get caught by 'app.get('/*', function(req, res)', allowing http to https redirects
 app.use(express.static(path.join(__dirname, '../public'), { index: false }));
 
-
+app.get('/about', function (req, res) {
+	console.log("about hit!");
+	res.json({about: 'This is the about string! yay!'});
+});
 
 app.get('/*', function (req, res) {
 	if (mode === PRODUCTION) {
@@ -69,6 +74,8 @@ app.get('/*', function (req, res) {
 	}
 
 });
+
+
 
 
 /*
