@@ -19,8 +19,12 @@ else {
 const express = require('express');
 const path = require('path');
 const app = express();
+exports.app = app;
+const bodyParser = require('body-parser');
 const fs = require('fs');
 const https = require('https');
+
+const imgApi = require('./imageApi.js');
 
 const HTTP_PORT_NUM = 3000;
 const HTTPS_PORT_NUM = 443;
@@ -39,6 +43,7 @@ if (mode == PRODUCTION) {
 	};
 }
 
+app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../build'), { index: false })); // index : false is to allow request for the webroot to get caught by 'app.get('/*', function(req, res)', allowing http to https redirects
 app.use(express.static(path.join(__dirname, '../public'), { index: false }));
 
@@ -46,6 +51,23 @@ app.get('/about', function (req, res) {
 	console.log("about hit!");
 	res.json({about: 'This is the about string! yay!'});
 });
+
+app.post('/api/authenticate', function(req, res) {
+	if(req.body.password === "password")
+	{
+		console.log("good login attempt");
+		let authToken = {authToken: "this is a temprary randomized key"};
+		res.json(authToken);
+		res.status(200);
+	}
+	else {
+		console.log("bad login attempt");
+		res.status(400);
+	}
+
+	res.send();
+});
+
 
 app.get('/*', function (req, res) {
 	if (mode === PRODUCTION) {

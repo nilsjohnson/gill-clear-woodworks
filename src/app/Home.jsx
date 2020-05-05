@@ -3,16 +3,18 @@ import Navbar from '../component/Navbar.jsx';
 import CarouselWrapper from '../component/CarouselWrapper.jsx';
 import SocialBar from '../component/SocialBar.jsx';
 import Footer from '../component/Footer.jsx';
-import { getAbout } from '../util/data.js';
+import { getAbout, getCarouselImages } from '../util/data.js';
 
 class Home extends Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			about: ""
+			about: "", // null here?
+			carouselImages: []
 		};
 
+		// TODO .catch
 		let callback = this.setAbout;
 		getAbout().then(function(response) {
 			if(response.ok) {
@@ -24,6 +26,30 @@ class Home extends Component {
 				console.log("problem getting about");
 			}
 		});
+
+		let callback_2 = this.setImages;
+		getCarouselImages().then(function(response) {
+			if(response.ok) {
+				response.json().then(data => {
+					callback_2(data);
+				});
+			}
+			else {
+				console.log("problem getting about");
+			}
+		}).catch(err => {
+			console.log("problem fetching carousel images.");
+			console.log(err)
+		});
+
+
+
+
+	}
+
+	setImages = (images) => {
+		console.log(images);
+		this.setState({carouselImages: images});
 	}
 
 	setAbout = (about) => {
@@ -40,20 +66,7 @@ class Home extends Component {
 				<div className="row">
 					<div className="col-xl-8">
 						<CarouselWrapper
-							images={[
-								"/img/eleven.jpg",
-								"/img/twelve.jpg",
-								"/img/one.jpg",
-								"/img/two.jpg",
-								"/img/three.jpg",
-								"/img/four.jpg",
-								"/img/five.jpg",
-								"/img/six.jpg",
-								"/img/seven.jpg",
-								"/img/eight.jpg",
-								"/img/ten.jpg",
-								"/img/thirteen.jpg",
-								"/img/fourteen.jpg"]}
+							images={this.state.carouselImages}
 						/>
 					</div>
 					<div className="col-xl-4">
