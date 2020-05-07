@@ -55,7 +55,7 @@ function addCarouselImage(image) {
  * @param {string} image File name of image to delete. I.e 'filename.jpg' 
  */
 function deleteImage(image) {
-	for(let i = 0; i < carouselImages.length; i++) {
+	for(let i = 0; i < getCarouselImages().length; i++) {
 		if(getCarouselImages()[i] === image) {
 			getCarouselImages().splice(i, 1);
 			let imgPath = CAROUSEL_IMAGE_DIR + image;
