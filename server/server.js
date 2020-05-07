@@ -53,7 +53,7 @@ app.get('/about', function (req, res) {
 });
 
 app.post('/api/authenticate', function(req, res) {
-	if(req.body.password === "password")
+	if(req.body.password === )
 	{
 		console.log("good login attempt");
 		let authToken = {authToken: "this is a temprary randomized key"};

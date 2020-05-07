@@ -19,18 +19,7 @@ class AdminLanding extends Component {
     render() {
         return (
         <div>
-
             <ImageUploadForm />
-
-			<div className="form-group row">
-	  			<label className="col-sm-3 col-form-label">About</label>
-	  			<div className="col-sm-9">
-	   				<textarea
-	   				 	type="text" className="form-control" id="event-name"
-	   				 	onChange={this.updateMessage}
-	   				/>
-	  			</div>
-			</div>
         </div>
         );
     }

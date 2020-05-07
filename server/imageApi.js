@@ -205,43 +205,30 @@ app.delete('/api/carouselImgDelete', function (req, res) {
 	res.json({ result: result });
 });
 
-
-
-
-
 /*
 To resize images. Spawns a Java program. 
 	-Will take src image, crop to proper aspect ratio and resize.
 	-Sections of edge may be lost, but image will not appear "smooshed"
 */
 function resize(src, dst, width, height, callback) {
-	//let args = ['Resize', src, dest, width, height];
 	console.log("src: " + src);
 	console.log("dst: " + dst);
 	let dim = width + 'x' + height;
 	console.log("dim: " + dim);
 
-
-	let args = [src, "-resize", dim, dst];
-	const resizer = spawn('convert', args);
-
-	resizer.stdout.on('data', (data) => {
-		console.log(`stdout: ${data}`);
-	});
-
-	resizer.stderr.on('data', (data) => {
-		console.log(`stderr: ${data}`);
-	});
-
-	resizer.on('close', (code) => {
-		//console.log(`child process exited with code ${code}.`);
-		if (code === 0) {
-			console.log("Image was resized.");
-			callback(dst)
+	const { exec } = require("child_process");
+	exec(path.join(__dirname, 'aspectcrop.sh') + " -a 4:3 " + src + " " + dst, (error, stdout, stderr) => {
+		if (error) {
+			console.log(`error: ${error.message}`);
+			return;
 		}
-		else {
-			console.log("Image not resized.");
+		if (stderr) {
+			console.log(`stderr: ${stderr}`);
+			return;
 		}
+		console.log(`stdout: ${stdout}`);
+		callback(dst);
 	});
-}
+}  
+
 
