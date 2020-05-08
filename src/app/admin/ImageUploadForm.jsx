@@ -73,12 +73,16 @@ class ImageUploadForm extends Component {
 			var formData = new FormData();
 		  	formData.append('photo', photos.files[i]);
 
-		  	uploadFile('/api/carouselUpload', formData)
-		  		.then(response => response.json())
-				.then(response => this.addThumbnail(response.address))
-				.catch(error => console.error('Error:', error));
+			uploadFile('/api/carouselUpload', formData)
+			.then(response => {
+				if(response.ok) {
+					return response.json();
+				}
+				throw(response.status);
+			})
+			.then(resJson => this.addThumbnail(resJson.address))
+			.catch(error => console.error('Error: ', error));
 		}
-
 		photos.value = "";
 	}
 

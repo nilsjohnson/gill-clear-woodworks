@@ -1,3 +1,5 @@
+import { getCookie } from './util.js';
+
 /*
 For blogger API
 */
@@ -43,9 +45,13 @@ upload a file
 function uploadFile(url = '', data = {}) {
     return fetch(url, {
         method: 'POST',
-        body: data
+        body: data,
+        headers: {
+            'Authorization': 'Token ' + getCookie('auth_token')
+        }
     });
 }
+
 
 
 /*
@@ -58,12 +64,13 @@ function postData(url = '', data = {}) {
         cache: 'no-cache',
         credentials: 'same-origin',
         headers: {
+            'Authorization': 'Token ' + getCookie('auth_token'),
             'Content-Type': 'application/json',
             'Accept': 'application/json',
         },
         redirect: 'follow',
         referrer: 'no-referrer',
-        body: JSON.stringify(data),
+        body: JSON.stringify(data)
     });
 }
 
@@ -81,7 +88,10 @@ function moveCarouselImgLeft(img) {
 function moveCarouselImg(direction, img) {
 	return fetch('/api/carouselImgs/move', {
 		method: 'PUT',
-		headers: {'Content-Type': 'application/json'},
+		headers: {
+            'Authorization': 'Token ' + getCookie('auth_token'),
+            'Content-Type': 'application/json'
+        },
 		body: JSON.stringify({ direction: direction, image: img})
 	});
 }
@@ -92,7 +102,10 @@ deletes an image
 function deleteData(url = '', data = {}) {
     return fetch(url, {
            method: 'DELETE',
-           headers: {'Content-Type': 'application/json'},
+           headers: {
+               'Authorization': 'Token ' + getCookie('auth_token'),
+               'Content-Type': 'application/json'
+            },
            body: JSON.stringify(data)
        });
    }

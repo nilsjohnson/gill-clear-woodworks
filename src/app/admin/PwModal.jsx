@@ -41,7 +41,6 @@ class PwModal extends Component {
 
 	authenticate = (event) => {
 		event.preventDefault();
-		
 		postData('/api/authenticate', {password: this.state.password})
   			.then(response => this.setAuthenticated(response))
   			.catch(error => console.error(error));
