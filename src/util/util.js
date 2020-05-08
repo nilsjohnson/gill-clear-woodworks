@@ -22,14 +22,19 @@ function getCookie(cname) {
   }
   
   
-  function setCookie(variable, value, expires_seconds) {
-	  var d = new Date();
-	  d = new Date(d.getTime() + 1000 * expires_seconds);
-	  document.cookie = variable + '=' + value + '; expires=' + d.toGMTString() + ';';
-  }
+function setCookie(variable, value, expires_seconds) {
+	var d = new Date();
+	d = new Date(d.getTime() + 1000 * expires_seconds);
+	document.cookie = variable + '=' + value + '; expires=' + d.toGMTString() + ';';
+}
+
+function deleteCookie(variable) {
+	document.cookie = variable + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+}
   
   export { 
 	toReadable,
 	getCookie,
 	setCookie,
+	deleteCookie
   };

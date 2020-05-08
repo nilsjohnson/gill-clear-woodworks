@@ -3,7 +3,8 @@ import Navbar from '../component/Navbar.jsx';
 import Footer from '../component/Footer.jsx';
 import PwModal from './admin/PwModal.jsx';
 import AdminLanding from './admin/AdminLanding.jsx';
-import { setCookie, getCookie } from '../util/util.js';
+import { setCookie, getCookie, deleteCookie } from '../util/util.js';
+import '../css/app.scss';
 
 class Admin extends Component {
    constructor(props) {
@@ -27,8 +28,15 @@ class Admin extends Component {
         else {
             console.log("auth token was null");
         }
-        
-        
+    }
+
+    logout = () => {
+        deleteCookie("auth_token");
+        this.redirectHome();
+    }
+
+    redirectHome = () => {
+        this.props.history.push('/');
     }
 
 
@@ -37,6 +45,8 @@ class Admin extends Component {
             return (
                 <div className="container">
                 <Navbar/>
+                <button className="btn btn-secondary float-right" onClick={this.logout}> Logout</button>
+                <h2 className="text-center">Admin Page</h2>
                 <AdminLanding />
 				<Footer/>
 			</div>
