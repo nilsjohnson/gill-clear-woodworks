@@ -4,10 +4,10 @@ const bodyParser = require('body-parser');
 const busboy = require('connect-busboy');
 const path = require('path');
 const shell = require('shelljs');
-const { spawn } = require('child_process');
 
 const { app } = require("./server");
 const fileUtil = require('./fileUtil.js');
+const auth = require('./authApi.js');
 
 app.use(bodyParser.json());
 app.use(busboy())
@@ -126,8 +126,9 @@ function moveCarouselImage(direction, image) {
 /*
 API endpoint To handle carousel uploads
 */
-app.post('/api/carouselUpload', function (req, res, next) {
-	console.log("image upload api hit");
+app.post('/api/carouselUpload', function (req, res, next) {	
+	if(!auth.authenticate(req.headers, res)) { return; }
+
 	let fstream;
 	req.pipe(req.busboy);
 	req.busboy.on('file', function (fieldname, file, filename) {
@@ -139,7 +140,7 @@ app.post('/api/carouselUpload', function (req, res, next) {
 		// rename images as to not overwrite files with same name.
 		let i = 2;
 		while (getCarouselImages().includes(saveName)) {
-			saveName = PUBLIC_PATH + "(" + i + ")" + filename;
+			saveName = PUBLIC_PATH + i + "_" + filename;
 			console.log(`Duplicate filename found. Renaming it "${saveName}"`);
 			dst = CAROUSEL_IMAGE_DIR + saveName;
 			i++;
@@ -171,7 +172,7 @@ app.get('/api/carouselImages', function(req, res) {
 API endpoint to shift carousel images left or right
 */
 app.put('/api/carouselImgs/move', function (req, res) {
-	console.log(req.body);
+	if(!auth.authenticate(req.headers, res)) { return; }
 	let result;
 	try {
 		moveCarouselImage(req.body.direction, req.body.image);
@@ -190,6 +191,8 @@ app.put('/api/carouselImgs/move', function (req, res) {
 API to handle carousel image deletes
 */
 app.delete('/api/carouselImgDelete', function (req, res) {
+	if(!auth.authenticate(req.headers, res)) { return; }
+
 	let result
 	console.log(req.body.image);
 	try {
