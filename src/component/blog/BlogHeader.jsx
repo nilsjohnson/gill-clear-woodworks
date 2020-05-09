@@ -19,7 +19,7 @@ class BlogHeader extends Component {
   }
   render() {
     return (
-      <div className="col-lg-4 col-md-6 col-sm-12 well">
+      <div className="col-lg-4 col-md-6 col-sm-12 box">
     		{/* The Image */}
         <Link to={{
            pathname: '/portfolio',
@@ -32,7 +32,7 @@ class BlogHeader extends Component {
            pathname: '/portfolio',
            search: '?post=' + this.props.post.id
           }}>
-          <h6 className="text-center">{this.props.post.title}</h6>
+          <h5 className="text-center">{this.props.post.title}</h5>
         </Link>
     	</div>
     );

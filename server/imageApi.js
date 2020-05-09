@@ -27,7 +27,7 @@ const LEFT = "LEFT", RIGHT = "RIGHT";
  */
 function loadImages() {
 	carouselImages = fileUtil.readObj(CAROUSEL_IMG_FILE_NAME);
-	if(carouselImages == null) {
+	if(carouselImages === null) {
 		carouselImages = [];
 	}
 }

@@ -10,41 +10,30 @@ class Home extends Component {
 		super(props);
 
 		this.state = {
-			about: "", // null here?
+			about: "",
+			addr_1: "",
+			add_2: "",
+			email: "",
 			carouselImages: []
 		};
 
-		// TODO .catch
-		let callback = this.setAbout;
-		getAbout().then(function(response) {
+		getAbout().then(response => {
 			if(response.ok) {
-				response.json().then(data => {
-					callback(data.about);
-				});
+				console.log(response);
+				return response.json();
 			}
-			else {
-				console.log("problem getting about");
-			}
-		});
+			throw(response.status);
+		})
+		.then(resJson => this.setFields(resJson))
+		.catch( err => console.log(`Problem getting 'about': ${err}`));
 
-		let callback_2 = this.setImages;
-		getCarouselImages().then(function(response) {
+		getCarouselImages().then(response => {
 			if(response.ok) {
-				response.json().then(data => {
-					callback_2(data);
-				});
+				return response.json();
 			}
-			else {
-				console.log("problem getting about");
-			}
-		}).catch(err => {
-			console.log("problem fetching carousel images.");
-			console.log(err)
-		});
-
-
-
-
+		}).then(resJson => {
+			this.setImages(resJson);
+		}).catch(err => console.log(`error: ${err}`));
 	}
 
 	setImages = (images) => {
@@ -52,9 +41,26 @@ class Home extends Component {
 		this.setState({carouselImages: images});
 	}
 
-	setAbout = (about) => {
-		console.log(about);
-		this.setState({about: about});
+	setFields = (object) => {
+		console.log(object);
+		const addr = new Array(2);
+		const temp = object.addr.split('\n');
+		if(addr.length >= 2) {
+			addr[0] = temp[0];
+			addr[1] = temp[1];
+		}
+		else if(addr.length = 1) {
+			addr[0] = temp[1];
+		}
+
+		this.setState({
+			about: object.about,
+			addr_1: addr[0],
+			addr_2: addr[1],
+			phone: object.phone,
+			message: object.message,
+			email: object.email
+		});
 	}
 
 	render() {
@@ -78,16 +84,16 @@ class Home extends Component {
 			            <div className="row">
 			                <div className="col-6">
 			                	<div>
-			                    	267 Main Rd.
+			                    	{this.state.addr_1}
 			                	</div>
 			                	<div>
-			                   		Gill, MA 01354
+									{this.state.addr_2}
 			                	</div>
 			                </div>
 			                <div className="col-6">
 			                	<div>Sam French</div>
-			                    <a href="mailto:gillccwoodworks@gmail.com">gillccwoodworks@gmail.com</a>
-			                    <div>(413) 627-7020</div>
+		<a href="mailto:gillccwoodworks@gmail.com">{this.state.email}</a>
+			                    <div>{ this.state.phone }</div>
 			                </div>
 			            </div>   
 					</div>

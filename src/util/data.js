@@ -112,7 +112,7 @@ function deleteData(url = '', data = {}) {
    
 
 export { getLatest,
-     getPostById,
+    getPostById,
     getAbout,
     postData,
     getCarouselImages, 

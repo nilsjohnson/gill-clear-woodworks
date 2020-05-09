@@ -30,7 +30,7 @@
     "webpack-cli": "^3.3.10"
   },
   "scripts": {
-    "start": "nodemon --watch server.js --watch fileUtil.js --watch imageApi.js --watch authApi.js ./server/server.js",
+    "start": "nodemon --watch server.js --watch fileUtil.js --watch imageApi.js --watch authApi.js --watch stringsApi.js ./server/server.js",
     "watch": "webpack --mode=development --watch",
     "build": "webpack --mode=development",
     "prodBuild": "webpack --mode=production"

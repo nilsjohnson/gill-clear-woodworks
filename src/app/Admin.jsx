@@ -22,7 +22,7 @@ class Admin extends Component {
         if(authToken != null) {
             console.log("setting auth token...");
             console.log(authToken);
-            setCookie("auth_token", authToken, 20*60);
+            setCookie("auth_token", authToken, 60*60*24);
             this.setState({authToken: authToken});
         }
         else {
