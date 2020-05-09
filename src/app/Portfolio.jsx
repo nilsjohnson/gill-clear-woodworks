@@ -12,7 +12,7 @@ class Portfolio extends Component {
 		return (
 			<div className="container">
 				<Navbar
-					activePage={"blog"}
+					activePage={"portfolio"}
 				/>
 				<div>
 					{query ? 

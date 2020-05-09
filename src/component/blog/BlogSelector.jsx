@@ -33,7 +33,7 @@ class BlogSelector extends Component {
 	
  	render() {
     	return (
-      	<div>
+      	<div className="row">
       		{this.state.posts.map(item => <BlogHeader
       			key={item.id}
 				post={item}/>)

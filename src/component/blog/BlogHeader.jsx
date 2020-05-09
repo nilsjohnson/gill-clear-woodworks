@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import '../../css/app.scss';
 import { Link } from 'react-router-dom';
 import NoImage from '../../img/noImage.png';
-import { toReadable } from '../../util/util';
 
 
 
@@ -20,24 +19,22 @@ class BlogHeader extends Component {
   }
   render() {
     return (
-      <div className="box">
-        <div className="row">
-          <div className="col-md-4">
-            <Link to={{
-                   pathname: '/portfolio',
-                   search: '?post=' + this.props.post.id
-                }}><img src={this.getImage()} className="img-fluid thumbnail"/></Link>
-          </div>
-          <div className="col-md-8">
-          <Link to={{
-                   pathname: '/portfolio',
-                   search: '?post=' + this.props.post.id
-                }}><h4 className="text-center">{this.props.post.title}</h4></Link>
-            <div>{toReadable(this.props.post.published)}</div>
-          </div>
-        </div>
-        <hr/>
-      </div>
+      <div className="col-lg-4 col-md-6 col-sm-12 well">
+    		{/* The Image */}
+        <Link to={{
+           pathname: '/portfolio',
+           search: '?post=' + this.props.post.id
+          }}>
+            <img src={this.getImage()} className="img-fluid thumbnail rounded mx-auto d-block"/>
+        </Link>
+        {/* The text */}
+        <Link to={{
+           pathname: '/portfolio',
+           search: '?post=' + this.props.post.id
+          }}>
+          <h6 className="text-center">{this.props.post.title}</h6>
+        </Link>
+    	</div>
     );
   }
 }
