@@ -4,7 +4,7 @@ import Footer from '../component/Footer.jsx';
 import BlogSelector from '../component/blog/BlogSelector.jsx';
 import PostContainer from '../component/blog/PostContainer.jsx';
 
-class Shop extends Component {
+class Portfolio extends Component {
 	render() {
 		let url = new URL(window.location.href);
 		let query = url.searchParams.get("post");
@@ -24,4 +24,4 @@ class Shop extends Component {
 	}
 }
 
-export default Shop;
+export default Portfolio;

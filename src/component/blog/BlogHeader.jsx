@@ -24,13 +24,13 @@ class BlogHeader extends Component {
         <div className="row">
           <div className="col-md-4">
             <Link to={{
-                   pathname: '/woodshop',
+                   pathname: '/portfolio',
                    search: '?post=' + this.props.post.id
                 }}><img src={this.getImage()} className="img-fluid thumbnail"/></Link>
           </div>
           <div className="col-md-8">
           <Link to={{
-                   pathname: '/woodshop',
+                   pathname: '/portfolio',
                    search: '?post=' + this.props.post.id
                 }}><h4 className="text-center">{this.props.post.title}</h4></Link>
             <div>{toReadable(this.props.post.published)}</div>
