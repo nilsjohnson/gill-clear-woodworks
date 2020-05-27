@@ -209,7 +209,7 @@ app.delete('/api/carouselImgDelete', function (req, res) {
 });
 
 /*
-To resize images. Spawns a Java program. 
+To resize images. Spawns a child process to run an ImagMagick script. 
 	-Will take src image, crop to proper aspect ratio and resize.
 	-Sections of edge may be lost, but image will not appear "smooshed"
 */
